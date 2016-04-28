@@ -1,10 +1,10 @@
 mongos:
-  image: quay.io/washpost/mongos:3.2
+  image: washpost/mongos:3.2
   environment:
     MONGODB_SHARD: node0 
     NODE_ID: ${NODE_ID}
 mongodb:
-  image: quay.io/washpost/mongodb:3.2
+  image: washpost/mongodb:3.2
   extra_hosts:
   {%- for node in aws.nodes %}
     - "node{{node.id}}:{{node.ip}}" 
@@ -16,7 +16,7 @@ mongodb:
     NODE_ID: ${NODE_ID} 
     NODE_LIST: node0,node1,node2
 configdb:
-  image: quay.io/washpost/mongodb:3.2
+  image: washpost/mongodb:3.2
   extra_hosts:
   {%- for node in aws.nodes %}
     - "node{{node.id}}:{{node.ip}}" 
