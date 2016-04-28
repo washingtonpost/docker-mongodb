@@ -1,0 +1,45 @@
+cluster:
+  name: mongodb-snbx
+  template: cluster.template.sh
+  aws:
+    ami: ami-e9333783
+    username: centos
+    terminate_protection: false
+    security_groups: sg-0ad1c36d
+    vpc: vpc-c01498a5
+    ebs_optimized: false
+    instance_type: t2.medium
+    keypair: drydock
+    volumes:
+      - name: root
+        size: 30G
+      - name: docker
+        size: 20G
+        block: /dev/xvdz
+        file_system: lvm2
+        meta:
+          group: docker
+          volumes:
+            - name: data 
+              size: 19G
+            - name: metadata
+              size: 900M 
+      - name: data
+        size: 10G
+        block: /dev/xvdc
+        file_system: ext4
+        meta:
+          format: true
+          mount: /data/mongodb
+    tags:
+      datadog: monitored
+    nodes:
+      - id: 0
+        ip: 10.0.10.10
+        subnet: subnet-9f0074c6
+      - id: 2
+        ip: 10.0.10.11
+        subnet: subnet-9f0074c6
+      - id: 1
+        ip: 10.0.11.10
+        subnet: subnet-df9c02f4
