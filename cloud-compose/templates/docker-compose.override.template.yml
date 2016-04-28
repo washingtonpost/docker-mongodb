@@ -1,5 +1,6 @@
 mongos:
   image: washpost/mongos:3.2
+  command: --configdb="${INSTANCE_IP}:27019"
   environment:
     MONGODB_SHARD: node0 
     MONGODB_HOST: ${INSTANCE_IP}
