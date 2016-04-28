@@ -2,6 +2,8 @@ mongos:
   image: washpost/mongos:3.2
   environment:
     MONGODB_SHARD: node0 
+    MONGODB_HOST: ${INSTANCE_IP}
+    CONFIGDB_HOST: ${INSTANCE_IP}
     NODE_ID: ${NODE_ID}
 mongodb:
   image: washpost/mongodb:3.2

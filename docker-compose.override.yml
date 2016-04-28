@@ -2,6 +2,8 @@ mongos:
   build: mongos 
   environment:
     MONGODB_SHARD: mongodb
+    MONGODB_HOST: mongodb
+    CONFIGDB_HOST: configdb
     NODE_ID: 0
   links:
     - configdb

@@ -43,8 +43,8 @@ if [ "$1" = 'mongos' ]; then
 		set -- $numa "$@"
 	fi
 
-  wait_for_startup mongodb 27018
-  wait_for_startup configdb 27019
+  wait_for_startup $MONGODB_HOST 27018
+  wait_for_startup $CONFIGDB_HOST 27019
 
   if [[ $MONGODB_SHARD ]]; then
     if [[ "$NODE_ID" == "0" ]]; then
