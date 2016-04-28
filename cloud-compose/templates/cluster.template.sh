@@ -1,5 +1,7 @@
-#TODO set NODE_ID to the correct value 
-NODE_ID=0
+#!/bin/bash
+{%- if _node_id is defined %}
+NODE_ID={{ _node_id }}
+{%- endif %}
 
 ## Disable transparent huge pages for Mongo.
 cat <<- 'EOF' >> /etc/rc.local
