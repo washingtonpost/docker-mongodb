@@ -1,6 +1,6 @@
 cluster:
   name: mongodb-snbx
-  template: cluster.template.sh
+  template: cluster.sh
   aws:
     ami: ami-e9333783
     username: centos
