@@ -1,12 +1,14 @@
 cluster:
-  name: mongodb-snbx
-  template: cluster.sh
+  name: ${CLUSTER_NAME}
+  template: docker-mongodb/cloud-compose/templates/cluster.sh
+  docker_compose: docker-mongodb/docker-compose.yml
+  docker_compose_override: docker-mongodb/cloud-compose/templates/docker-compose.override.yml
   aws:
-    ami: ami-e9333783
-    username: centos
+    ami: ${IMAGE_ID}
+    username: ${IMAGE_USERNAME}
     terminate_protection: false
-    security_groups: sg-0ad1c36d
-    vpc: vpc-c01498a5
+    security_groups: ${SECURITY_GROUP_ID}
+    vpc: ${VPC_ID}
     ebs_optimized: false
     instance_type: t2.medium
     keypair: drydock
@@ -35,11 +37,11 @@ cluster:
       datadog: monitored
     nodes:
       - id: 0
-        ip: 10.0.10.10
-        subnet: subnet-9f0074c6
-      - id: 2
-        ip: 10.0.10.11
-        subnet: subnet-9f0074c6
+        ip: ${CLUSTER_NODE_0_IP}
+        subnet: ${CLUSTER_NODE_0_SUBNET}
       - id: 1
-        ip: 10.0.11.10
-        subnet: subnet-df9c02f4
+        ip: ${CLUSTER_NODE_1_IP}
+        subnet: ${CLUSTER_NODE_1_SUBNET}
+      - id: 2
+        ip: ${CLUSTER_NODE_2_IP}
+        subnet: ${CLUSTER_NODE_2_SUBNET}
