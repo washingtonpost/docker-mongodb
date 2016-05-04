@@ -7,9 +7,9 @@ This project provides a Dockerized MongoDB cluster with the following features:
 # Quick Start
 To use this project do the following:
 
-1. Create a new Github repo for your configuration (e.g. my-configs)
-1. Create a directory for mongodb (i.e. mkdir my-configs/mongodb)
-1. Create a sub-directory for your cluster (i.e. mkdir my-configs/mongodb/foobar)
+1. Create a new Github repo for your configuration (e.g. `my-configs`)
+1. Create a directory for mongodb (e.g. `mkdir my-configs/mongodb`)
+1. Create a sub-directory for your cluster (e.g. `mkdir my-configs/mongodb/foobar`)
 1. Clone this project into your Github repo using subtree merge
 1. Copy the docker-mongodb/cloud-compose/cloud-compose.yml.example to your cluster sub-directory
 1. Modify the cloud-compose.yml to fit your needs
