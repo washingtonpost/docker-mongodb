@@ -1,8 +1,8 @@
 cluster:
   name: ${CLUSTER_NAME}
-  template: docker-mongodb/cloud-compose/templates/cluster.sh
-  docker_compose: docker-mongodb/docker-compose.yml
-  docker_compose_override: docker-mongodb/cloud-compose/templates/docker-compose.override.yml
+  search_path:
+    - docker-mongodb
+    - docker-mongodb/cloud-compose/templates
   aws:
     ami: ${IMAGE_ID}
     username: ${IMAGE_USERNAME}
