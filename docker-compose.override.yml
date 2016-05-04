@@ -4,6 +4,7 @@ mongos:
     MONGODB_SHARD: mongodb
     MONGODB_HOST: mongodb
     CONFIGDB_HOST: configdb
+    MONGODB_ADMIN_PASSWORD: 123456789
     NODE_ID: 0
   links:
     - configdb
@@ -17,6 +18,7 @@ mongodb:
     NODE_ID: 0
     CLUSTER_SIZE: 1
     NODE_LIST: mongodb
+    MONGODB_ADMIN_PASSWORD: 123456789
   links:
     - configdb
 configdb:
@@ -27,3 +29,4 @@ configdb:
   environment:
     NODE_ID: 0
     NODE_LIST: configdb 
+    MONGODB_ADMIN_PASSWORD: 123456789

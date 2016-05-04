@@ -7,15 +7,17 @@ mongos:
     MONGODB_REPL_SET: rs0
 mongodb:
   container_name: mongodb 
-  command: --shardsvr --replSet rs0 --dbpath /data/db
+  command: --shardsvr --dbpath /data/db
   ports:
     - "27018:27018"
   environment:
     MONGODB_PORT: 27018 
+    MONGODB_REPL_SET: rs0
 configdb:
   container_name: configdb 
-  command: --configsvr --replSet cfgrs0 --wiredTigerCacheSizeGB=1 --dbpath /data/db
+  command: --configsvr --wiredTigerCacheSizeGB=1 --dbpath /data/db
   ports:
     - "27019:27019"
   environment:
     MONGODB_PORT: 27019 
+    MONGODB_REPL_SET: cfgrs0
