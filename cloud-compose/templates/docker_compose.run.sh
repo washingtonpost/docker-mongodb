@@ -10,5 +10,5 @@ cat << EOF > /tmp/docker-compose.override.yml
 {{ docker_compose.override_yaml }}
 EOF
 
-runuser -l {{ username }} -c "/usr/local/bin/docker-compose -f /tmp/docker-compose.yml -f /tmp/docker-compose.override.yml up -d"
+runuser -l {{ aws.username }} -c "/usr/local/bin/docker-compose -f /tmp/docker-compose.yml -f /tmp/docker-compose.override.yml up -d"
 
