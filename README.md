@@ -13,7 +13,7 @@ To use this project do the following:
 1. Clone this project into your Github repo using subtree merge
 1. Copy the docker-mongodb/cloud-compose/cloud-compose.yml.example to your cluster sub-directory
 1. Modify the cloud-compose.yml to fit your needs
-1. Create a new cluster using the (Cloud Compose cluster plugin)[https://github.com/cloud-compose/cloud-compose-cluster].
+1. Create a new cluster using the [Cloud Compose cluster plugin](https://github.com/cloud-compose/cloud-compose-cluster).
 ```
 pip install cloud-compose cloud-compose-cluster
 pip freeze -r > requirements.txt
