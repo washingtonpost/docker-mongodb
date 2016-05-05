@@ -15,11 +15,6 @@ class Snapshot():
         self.start_time = start_time
 
 class SnapshotManager():
-    """class for making snapshots"""
-    datetime_format = "%Y-%m-%dT%H:%M:%S.%fZ"
-    #TODO move this to a parameter
-    sub_hourly_snapshots_minutes = 180
-
     def __init__(self, cluster_name, instance_id, data_device, statsd=None,
                  log_handler=None, log_level=logging.INFO):
         self.configure_logger(log_handler, log_level)
@@ -72,12 +67,12 @@ class SnapshotManager():
     def utcnow(self):
         return datetime.utcnow().replace(tzinfo=pytz.utc)
 
-    def remove_old_snapshots(self, now, hourly_snapshots, daily_snapshots):
+    def remove_old_snapshots(self, now, minutely_snapshots, hourly_snapshots, daily_snapshots):
         #needs to sort by time ASCENDING for the rest of the code to work
         snapshots = self.get_sorted_snapshots()
         self._record_backup_metrics(now, snapshots)
 
-        snapshots = self._remove_sub_hourly_snapshots(now, snapshots)
+        snapshots = self._remove_minutely_snapshots(now, minutely_snapshots, snapshots)
         snapshots = self._remove_hourly_snapshots(now, hourly_snapshots, snapshots)
         snapshots = self._remove_daily_snapshots(now, daily_snapshots, snapshots)
 
@@ -86,13 +81,23 @@ class SnapshotManager():
             self.logger.info("Deleting snapshot %s %s" % (snapshot.snapshot_id, snapshot.start_time))
             self.delete_snapshot(snapshot.snapshot_id)
 
-    def _remove_daily_snapshots(self, now, daily_snapshots, snapshots):
-        keep_since_time = now - timedelta(days=daily_snapshots)
-        return self._remove_bucketed_snapshots(keep_since_time, "%Y%m%d", snapshots)
+    def _remove_minutely_snapshots(self, now, minutely_snapshots, snapshots):
+        snapshots_to_delete = []
+        keep_since_time = now - timedelta(minutes=minutely_snapshots)
+        for snapshot in snapshots:
+            snapshot_start = snapshot.start_time
+            if snapshot_start < keep_since_time:
+                snapshots_to_delete.append(snapshot)
+
+        return snapshots_to_delete
 
     def _remove_hourly_snapshots(self, now, hourly_snapshots, snapshots):
         keep_since_time = now - timedelta(hours=hourly_snapshots)
         return self._remove_bucketed_snapshots(keep_since_time, "%Y%m%d%H", snapshots)
+
+    def _remove_daily_snapshots(self, now, daily_snapshots, snapshots):
+        keep_since_time = now - timedelta(days=daily_snapshots)
+        return self._remove_bucketed_snapshots(keep_since_time, "%Y%m%d", snapshots)
 
     def _remove_bucketed_snapshots(self, keep_since_time, bucket_key_datetime_format, snapshots):
         snapshots_to_delete = []
@@ -109,16 +114,6 @@ class SnapshotManager():
                 else:
                     # save the first snapshot for the hour; this code assumes that the snapshots are sorted ascending already
                     snapshot_bucket[bucket_key] = snapshot
-
-        return snapshots_to_delete
-
-    def _remove_sub_hourly_snapshots(self, now, snapshots):
-        snapshots_to_delete = []
-        keep_since_time = now - timedelta(minutes=self.sub_hourly_snapshots_minutes)
-        for snapshot in snapshots:
-            snapshot_start = snapshot.start_time
-            if snapshot_start < keep_since_time:
-                snapshots_to_delete.append(snapshot)
 
         return snapshots_to_delete
 

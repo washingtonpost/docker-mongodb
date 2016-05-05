@@ -43,11 +43,25 @@ class Main():
 
         self.cluster_name = environ['CLUSTER_NAME']
         self.snapshot_and_exit = environ.get('MONGODB_SNAPSHOT_AND_EXIT', 'false').lower() == 'true'
-        self.hourly_snapshots = int(environ.get('MONGODB_HOUR_SNAPSHOTS', '24'))
-        self.daily_snapshots = int(environ.get('MONGODB_daily_SNAPSHOTS', '7'))
+        self.minutely_snapshots = int(environ.get('MONGODB_MINUTELY_SNAPSHOTS', '360'))
+        self.hourly_snapshots = int(environ.get('MONGODB_HOURLY_SNAPSHOTS', '24'))
+        self.daily_snapshots = int(environ.get('MONGODB_DAILY_SNAPSHOTS', '7'))
         self.data_device = environ.get('MONGODB_DATA_DEVICE', '/dev/xvdc')
         self.instance_id = self.get_instance_id()
         self.statsd = DogStatsd(host='172.17.0.1', port=8125)
+        self.snapshot_frequency = self.get_snapshot_frequency()
+
+    def get_snapshot_frequency(self):
+        allowed_frequencies = [5, 10, 15, 20]
+        default_frequency = 10
+        snapshot_frequency = int(environ.get('MONGODB_SNAPSHOT_FREQUENCY', str(default_frequency)))
+        if snapshot_frequency not in allowed_frequencies:
+            self.logger.error('Invalid MONGODB_SNAPSHOT_FREQUENCY of %s minute. Only %s minutes are allowed. Changing to default frequency of %s minutes.' %
+                              (snapshot_frequency,
+                               ' or '.join([str(x) for x in allowed_frequencies]),
+                               default_frequency))
+            snapshot_frequency = default_frequency
+        return snapshot_frequency
 
     def get_instance_id(self):
         if 'INSTANCE_ID' in environ:
@@ -63,7 +77,7 @@ class Main():
         if self.snapshot_and_exit:
             self.logger.info('Creating a single snapshot and exiting')
         else:
-            self.logger.info('Starting in continuous snapshot mode')
+            self.logger.info('Taking a snapshot every %s minutes.' % self.snapshot_frequency)
 
         while True:
             try:
@@ -76,20 +90,19 @@ class Main():
 
     def create_snapshot_on_master(self):
         if self.is_master():
-            self.logger.info('This node is the replica set master. Taking a snapshot.')
             self.create_snapshot()
         else:
             self.logger.info('This node is NOT the replica set master. Skipping snapshots.')
 
     def create_snapshot(self):
-        # TODO take POINT_IN_TIME_RETENTION as env vars
-        # point in time snapshots are taken every 10 minutes
-        if datetime.now().minute % 10 == 0 or self.snapshot_and_exit:
+        if datetime.now().minute % self.snapshot_frequency == 0 or self.snapshot_and_exit:
             snapshot_manager = SnapshotManager(self.cluster_name, self.instance_id,
                                                self.data_device, self.statsd,
                                                self.log_handler, self.log_level)
             current_datetime = snapshot_manager.utcnow()
-            snapshot_manager.remove_old_snapshots(current_datetime, self.hourly_snapshots,
+            snapshot_manager.remove_old_snapshots(current_datetime,
+                                                  self.minutely_snapshots,
+                                                  self.hourly_snapshots,
                                                   self.daily_snapshots)
             snapshot_manager.create_snapshot()
 
