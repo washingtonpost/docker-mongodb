@@ -33,6 +33,3 @@ configdb:
 snapshots:
   build: snapshots 
   hostname: snapshots 
-  environment:
-    CLUSTER_NAME: mongodb-snbx-auth
-    MONGODB_SNAPSHOT_AND_EXIT: 'true'
