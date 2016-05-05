@@ -105,6 +105,8 @@ class Main():
                                                   self.hourly_snapshots,
                                                   self.daily_snapshots)
             snapshot_manager.create_snapshot()
+            # have to sleep at least a minute to avoid creating duplicate snapshots
+            time.sleep(70)
 
 
 if __name__ == "__main__":
