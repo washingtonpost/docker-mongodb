@@ -2,12 +2,20 @@ from unittest import TestCase
 from mongodb.snapshotmanager import SnapshotManager, Snapshot
 import pytz
 from datetime import datetime
+import logging
+import logging.handlers
+import sys
 
 def date(date):
     return pytz.utc.localize(datetime.strptime(date, "%Y-%m-%dT%H:%M:%S.%fZ"))
 
 class MockSnapshotManager(SnapshotManager):
     def __init__(self):
+        formatter = logging.Formatter('[%(levelname)s] %(name)s - %(message)s')
+        log_handler = logging.StreamHandler(sys.stdout)
+        log_handler.setFormatter(formatter)
+        log_level = logging.DEBUG
+        self.configure_logger(log_handler, log_level)
         self.snapshots = {}
         self.statsd = None
 

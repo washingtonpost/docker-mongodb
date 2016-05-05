@@ -1,5 +1,4 @@
 import sys
-import urllib2
 import pytz
 import logging
 import logging.handlers
@@ -17,22 +16,29 @@ class Snapshot():
 
 class SnapshotManager():
     """class for making snapshots"""
-    ## Log to stdout
-    logger = logging.getLogger('Mongo Snapshot Log')
-    logger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    handler = logging.StreamHandler(sys.stdout)
-    handler.setFormatter(formatter)
-    logger.addHandler(handler)
     datetime_format = "%Y-%m-%dT%H:%M:%S.%fZ"
+    #TODO move this to a parameter
     sub_hourly_snapshots_minutes = 180
 
-    def __init__(self, cluster_name, statsd=None):
+    def __init__(self, cluster_name, instance_id, data_device, statsd=None,
+                 log_handler=None, log_level=logging.INFO):
+        self.configure_logger(log_handler, log_level)
+        self.logger.setLevel(logging.DEBUG)
         self.ec2 = self._get_ec2_client()
-        self.data_device = environ.get('MONGODB_DATA_DEVICE', '/dev/xvdc')
-        self.instance_id = environ.get('INSTANCE_ID')
+        self.data_device = data_device
+        self.instance_id = instance_id
         self.cluster_name = cluster_name
         self.statsd = statsd
+
+    def configure_logger(self, handler, level):
+        self.logger = logging.getLogger(__name__)
+        if not handler:
+            formatter = logging.Formatter('[%(levelname)s] %(name)s - %(message)s')
+            handler = logging.StreamHandler(sys.stdout)
+            handler.setFormatter(formatter)
+
+        self.logger.addHandler(handler)
+        self.logger.setLevel(level)
 
     def _get_ec2_client(self):
         kwargs = {
@@ -155,11 +161,11 @@ class SnapshotManager():
         if 'SnapshotId' in response:
             return response['SnapshotId']
 
-    def create_snapshot_for_instance(self, instance_id):
+    def create_snapshot(self):
         try:
             ## Create snapshots of data volumes attached to 'server' and with block dev 'xvdc'
             ## This should only return one volume.
-            volumes = self._ec2_describe_volumes(Filters=[{'Name': 'attachment.instance-id', 'Values': [instance_id]},
+            volumes = self._ec2_describe_volumes(Filters=[{'Name': 'attachment.instance-id', 'Values': [self.instance_id]},
                                                          {'Name': 'attachment.device', 'Values': [self.data_device]}])
 
             if len(volumes) == 0:
@@ -168,7 +174,7 @@ class SnapshotManager():
 
             for volume in volumes:
                 volume_id = volume['VolumeId']
-                self.logger.debug("Creating snapshot for volume " + str(volume_id) + " from instance " + instance_id)
+                self.logger.debug("Creating snapshot for volume " + str(volume_id) + " from instance " + self.instance_id)
                 self.create_snapshot_for_volume(volume_id)
 
             return True
@@ -192,12 +198,6 @@ class SnapshotManager():
             snapshots = response['Snapshots']
         return snapshots
 
-    def create_snapshot(self):
-        if not self.instance_id:
-            self.instance_id = urllib2.urlopen("http://169.254.169.254/latest/meta-data/instance-id").read()
-        if not self.instance_id:
-            raise SnapshotManagerException("No instance id could be found using either INSTANCE_ID environment variable or instance metadata")
-        self.create_snapshot_for_instance(self.instance_id)
 
 class SnapshotManagerException(Exception):
     def __init__(self,*args,**kwargs):

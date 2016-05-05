@@ -33,3 +33,6 @@ configdb:
 snapshots:
   build: snapshots 
   hostname: snapshots 
+  environment:
+    CLUSTER_NAME: localhost 
+    INSTANCE_ID: localhost
