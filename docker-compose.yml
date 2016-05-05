@@ -21,3 +21,7 @@ configdb:
   environment:
     MONGODB_PORT: 27019 
     MONGODB_REPL_SET: cfgrs0
+snapshots:
+  container_name: snapshots 
+  links:
+    - mongodb
