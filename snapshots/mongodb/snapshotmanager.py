@@ -54,11 +54,9 @@ class SnapshotManager():
 
     def get_snapshots(self):
         snapshots = []
-        response = self._ec2_describe_snapshots(Filters=[{"Name": "tag:ClusterName", "Values": [self.cluster_name]}] )
-        if 'Snapshots' in response:
-            for snapshot in response['Snapshots']:
-                localized_start_time = pytz.timezone('UTC').localize(snapshot['StartTime'])
-                snapshots.append(Snapshot(snapshot['SnapshotId'], localized_start_time))
+        described_snapshots = self._ec2_describe_snapshots(Filters=[{"Name": "tag:ClusterName", "Values": [self.cluster_name]}] )
+        for snapshot in described_snapshots:
+            snapshots.append(Snapshot(snapshot['SnapshotId'], snapshot['StartTime']))
         return snapshots
 
 
@@ -163,13 +161,15 @@ class SnapshotManager():
             ## This should only return one volume.
             volumes = self._ec2_describe_volumes(Filters=[{'Name': 'attachment.instance-id', 'Values': [instance_id]},
                                                          {'Name': 'attachment.device', 'Values': [self.data_device]}])
+
+            if len(volumes) == 0:
+                self.logger.error("No applicable volumes found. Does the MongoDB instance have a block device at %s?" % self.data_device)
+                return False
+
             for volume in volumes:
                 volume_id = volume['VolumeId']
                 self.logger.debug("Creating snapshot for volume " + str(volume_id) + " from instance " + instance_id)
                 self.create_snapshot_for_volume(volume_id)
-            else:
-                self.logger.error("No applicable volumes found. Does the MongoDB instance have a block device at %s?" % self.data_device)
-                return False
 
             return True
         except Exception as ex:
@@ -183,6 +183,14 @@ class SnapshotManager():
         if 'Volumes' in response:
             volumes = response['Volumes']
         return volumes
+
+    @retry(retry_on_exception=_is_retryable_exception, stop_max_delay=10000, wait_exponential_multiplier=500, wait_exponential_max=2000)
+    def _ec2_describe_snapshots(self, **kwargs):
+        response = self.ec2.describe_snapshots(**kwargs)
+        snapshots = []
+        if 'Snapshots' in response:
+            snapshots = response['Snapshots']
+        return snapshots
 
     def create_snapshot(self):
         if not self.instance_id:
