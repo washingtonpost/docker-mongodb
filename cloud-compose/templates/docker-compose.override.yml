@@ -6,6 +6,13 @@ mongos:
   {%- for node in aws.nodes %}
     - "node{{node.id}}:{{node.ip}}" 
   {%- endfor %}
+  {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
+  logging: 
+    driver: awslogs
+    options:
+      awslogs-group: {{ logging.meta.group }}
+      awslogs-stream: mongos-node-${NODE_ID}
+  {%- endif %}
   environment:
     MONGODB_SHARD: node0 
     MONGODB_HOST: ${INSTANCE_IP}
@@ -23,6 +30,13 @@ mongodb:
   volumes:
     - "/data/mongodb/mongodb:/data/db"
   restart: always
+  {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
+  logging: 
+    driver: awslogs
+    options:
+      awslogs-group: {{ logging.meta.group }}
+      awslogs-stream: mongodb-node-${NODE_ID}
+  {%- endif %}
   environment:
     NODE_ID: ${NODE_ID} 
     NODE_LIST: node0,node1,node2
@@ -36,9 +50,31 @@ configdb:
   {%- for node in aws.nodes %}
     - "node{{node.id}}:{{node.ip}}" 
   {%- endfor %}
+  {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
+  logging: 
+    driver: awslogs
+    options:
+      awslogs-group: {{ logging.meta.group }}
+      awslogs-stream: configdb-node-${NODE_ID}
+  {%- endif %}
   environment:
     NODE_ID: ${NODE_ID} 
     NODE_LIST: node0,node1,node2
+  {%- if MONGODB_ADMIN_PASSWORD is defined %}
+    MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
+  {%- endif %}
+snapshots:
+  image: washpost/mongodb-snapshots:3.2
+  restart: always
+  {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
+  logging: 
+    driver: awslogs
+    options:
+      awslogs-group: {{ logging.meta.group }}
+      awslogs-stream: snapshots-node-${NODE_ID}
+  {%- endif %}
+  environment:
+    CLUSTER_NAME: ${CLUSTER_NAME}
   {%- if MONGODB_ADMIN_PASSWORD is defined %}
     MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
   {%- endif %}

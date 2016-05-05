@@ -3,6 +3,10 @@ cluster:
   search_path:
     - docker-mongodb
     - docker-mongodb/cloud-compose/templates
+  log:
+    driver: awslogs 
+    meta:
+      group: /cloud-compose/${CLUSTER_NAME}
   aws:
     ami: ${IMAGE_ID}
     username: ${IMAGE_USERNAME}
