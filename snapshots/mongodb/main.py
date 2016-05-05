@@ -88,7 +88,7 @@ class Main():
             snapshot_manager = SnapshotManager(self.cluster_name, self.instance_id,
                                                self.data_device, self.statsd,
                                                self.log_handler, self.log_level)
-            current_datetime = pytz.timezone('UTC').localize(datetime.now())
+            current_datetime = snapshot_manager.utcnow()
             snapshot_manager.remove_old_snapshots(current_datetime, self.hourly_snapshots,
                                                   self.daily_snapshots)
             snapshot_manager.create_snapshot()

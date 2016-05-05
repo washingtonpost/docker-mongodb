@@ -69,6 +69,9 @@ class SnapshotManager():
     def delete_snapshot(self, snapshot_id):
         self.ec2.delete_snapshot(SnapshotId=snapshot_id)
 
+    def utcnow(self):
+        return datetime.utcnow().replace(tzinfo=pytz.utc)
+
     def remove_old_snapshots(self, now, hourly_snapshots, daily_snapshots):
         #needs to sort by time ASCENDING for the rest of the code to work
         snapshots = self.get_sorted_snapshots()
@@ -141,10 +144,10 @@ class SnapshotManager():
         return not isinstance(exception, botocore.exceptions.ClientError)
 
     def create_snapshot_for_volume(self, volume_id):
-        snap_name = self.cluster_name + "." + datetime.now().strftime( '%Y%m%d%H%M' )
-        tags = [{ 'Key': 'ClusterName', 'Value': self.cluster_name },
-                { 'Key': 'Name', 'Value' : snap_name}]
-        snapshot_id = self._ec2_create_snapshot( VolumeId=volume_id, Description=snap_name )
+        snap_name = self.cluster_name + "." + self.utcnow().strftime('%Y%m%d%H%M')
+        tags = [{'Key': 'ClusterName', 'Value': self.cluster_name},
+                {'Key': 'Name', 'Value': snap_name}]
+        snapshot_id = self._ec2_create_snapshot(VolumeId=volume_id, Description=snap_name)
         if not snapshot_id:
             raise SnapshotManagerException("No snapshot id found after creating snapshot")
 
