@@ -80,3 +80,18 @@ services:
     {%- if MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
     {%- endif %}
+    {%- if MONGODB_MINUTELY_SNAPSHOTS is defined %}
+      MONGODB_MINUTELY_SNAPSHOTS: {{ MONGODB_MINUTELY_SNAPSHOTS }}
+    {%- endif %}
+    {%- if MONGODB_HOURLY_SNAPSHOTS is defined %}
+      MONGODB_HOURLY_SNAPSHOTS: {{ MONGODB_HOURLY_SNAPSHOTS }}
+    {%- endif %}
+    {%- if MONGODB_DAILY_SNAPSHOTS is defined %}
+      MONGODB_DAILY_SNAPSHOTS: {{ MONGODB_DAILY_SNAPSHOTS }}
+    {%- endif %}
+    {%- if MONGODB_SNAPSHOT_FREQUENCY is defined %}
+      MONGODB_SNAPSHOT_FREQUENCY: {{ MONGODB_SNAPSHOT_FREQUENCY }}
+    {%- endif %}
+    {%- if MONGODB_DATA_DEVICE is defined %}
+      MONGODB_DATA_DEVICE: {{ MONGODB_DATA_DEVICE }}
+    {%- endif %}
