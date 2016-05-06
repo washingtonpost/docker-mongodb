@@ -76,7 +76,8 @@ services:
         awslogs-stream: snapshots-node-${NODE_ID}
     {%- endif %}
     environment:
-      CLUSTER_NAME: ${CLUSTER_NAME}
+      CLUSTER_NAME: {{ name }}
+      MONGODB_DEVICE_NAME: {{ aws.volumes[2].block }}
     {%- if MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
     {%- endif %}
@@ -91,7 +92,4 @@ services:
     {%- endif %}
     {%- if MONGODB_SNAPSHOT_FREQUENCY is defined %}
       MONGODB_SNAPSHOT_FREQUENCY: {{ MONGODB_SNAPSHOT_FREQUENCY }}
-    {%- endif %}
-    {%- if MONGODB_DATA_DEVICE is defined %}
-      MONGODB_DATA_DEVICE: {{ MONGODB_DATA_DEVICE }}
     {%- endif %}

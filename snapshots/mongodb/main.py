@@ -40,12 +40,16 @@ class Main():
             self.logger.fatal('CLUSTER_NAME environment variable is required')
             sys.exit(1)
 
+        if not environ.get('MONGODB_DEVICE_NAME'):
+            self.logger.fatal('MONGODB_DEVICE_NAME environment variable is required')
+            sys.exit(1)
+
         self.cluster_name = environ['CLUSTER_NAME']
+        self.device_name = environ['MONGODB_DEVICE_NAME']
         self.snapshot_and_exit = environ.get('MONGODB_SNAPSHOT_AND_EXIT', 'false').lower() == 'true'
         self.minutely_snapshots = int(environ.get('MONGODB_MINUTELY_SNAPSHOTS', '360'))
         self.hourly_snapshots = int(environ.get('MONGODB_HOURLY_SNAPSHOTS', '24'))
         self.daily_snapshots = int(environ.get('MONGODB_DAILY_SNAPSHOTS', '7'))
-        self.data_device = environ.get('MONGODB_DATA_DEVICE', '/dev/xvdc')
         self.instance_id = self.get_instance_id()
         self.statsd = DogStatsd(host='172.17.0.1', port=8125)
         self.snapshot_frequency = self.get_snapshot_frequency()
@@ -108,7 +112,7 @@ class Main():
     def create_snapshot(self, now):
         if now.minute % self.snapshot_frequency == 0 or self.snapshot_and_exit:
             snapshot_manager = SnapshotManager(self.cluster_name, self.instance_id,
-                                               self.data_device, self.statsd,
+                                               self.device_name, self.statsd,
                                                self.log_handler, self.log_level)
             current_datetime = snapshot_manager.utcnow()
             snapshot_manager.remove_old_snapshots(current_datetime,

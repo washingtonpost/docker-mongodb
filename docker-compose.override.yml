@@ -37,4 +37,5 @@ services:
     hostname: snapshots 
     environment:
       CLUSTER_NAME: localhost 
+      MONGODB_DEVICE_NAME: local
       INSTANCE_ID: localhost

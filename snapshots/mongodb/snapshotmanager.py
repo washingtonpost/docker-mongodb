@@ -15,12 +15,12 @@ class Snapshot():
         self.start_time = start_time
 
 class SnapshotManager():
-    def __init__(self, cluster_name, instance_id, data_device, statsd=None,
+    def __init__(self, cluster_name, instance_id, device_name, statsd=None,
                  log_handler=None, log_level=logging.INFO):
         self.configure_logger(log_handler, log_level)
         self.logger.setLevel(logging.DEBUG)
         self.ec2 = self._get_ec2_client()
-        self.data_device = data_device
+        self.device_name = device_name
         self.instance_id = instance_id
         self.cluster_name = cluster_name
         self.statsd = statsd
@@ -141,6 +141,7 @@ class SnapshotManager():
     def create_snapshot_for_volume(self, volume_id):
         snap_name = self.cluster_name + "." + self.utcnow().strftime('%Y%m%d%H%M')
         tags = [{'Key': 'ClusterName', 'Value': self.cluster_name},
+                {'Key': 'DeviceName', 'Value': self.device_name},
                 {'Key': 'Name', 'Value': snap_name}]
         snapshot_id = self._ec2_create_snapshot(VolumeId=volume_id, Description=snap_name)
         if not snapshot_id:
@@ -164,10 +165,10 @@ class SnapshotManager():
             ## Create snapshots of data volumes attached to 'server' and with block dev 'xvdc'
             ## This should only return one volume.
             volumes = self._ec2_describe_volumes(Filters=[{'Name': 'attachment.instance-id', 'Values': [self.instance_id]},
-                                                         {'Name': 'attachment.device', 'Values': [self.data_device]}])
+                                                         {'Name': 'attachment.device', 'Values': [self.device_name]}])
 
             if len(volumes) == 0:
-                self.logger.error("No applicable volumes found. Does the MongoDB instance have a block device at %s?" % self.data_device)
+                self.logger.error("No applicable volumes found. Does the MongoDB instance have a block device at %s?" % self.device_name)
                 return False
 
             for volume in volumes:

@@ -3,7 +3,7 @@ cluster:
   search_path:
     - docker-mongodb
     - docker-mongodb/cloud-compose/templates
-  log:
+  logging:
     driver: awslogs 
     meta:
       group: /cloud-compose/${CLUSTER_NAME}
