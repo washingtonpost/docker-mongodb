@@ -22,7 +22,6 @@ class Main():
     def is_master(self):
         if environ.get('MONGODB_REPLICA_SET_MASTER', 'false').lower() == 'true':
             return True
-        self.logger.debug('Connecting to mongodb to see if this node is master')
         connection = self.mongo_client('mongodb', 27018, environ.get('MONGODB_ADMIN_PASSWORD', None))
         db = connection.admin
         return db.command('isMaster')['ismaster']
