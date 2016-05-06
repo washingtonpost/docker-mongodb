@@ -80,23 +80,34 @@ class Main():
         else:
             self.logger.info('Taking a snapshot every %s minutes.' % self.snapshot_frequency)
 
+        last_snapshot_datetime = None
         while True:
             try:
-                self.create_snapshot_on_master()
-                if self.snapshot_and_exit:
-                    return
+                now = datetime.now()
+                if self.snapshot_and_exit or self.time_to_snapshot_again(last_snapshot_datetime, now):
+                    snapshot_datetime = self.create_snapshot_on_master(now)
+                    if self.snapshot_and_exit:
+                        return
+                    if snapshot_datetime:
+                        last_snapshot_datetime = snapshot_datetime
+
             except Exception as ex:
                 self.logger.error("unhandled exception: %s" % ex)
             time.sleep(10)
 
-    def create_snapshot_on_master(self):
-        if self.is_master():
-            self.create_snapshot()
-        else:
-            self.logger.info('This node is NOT the replica set master. Skipping snapshots.')
+    def time_to_snapshot_again(self, last_snapshot_datetime, now):
+        if not last_snapshot_datetime:
+            return True
 
-    def create_snapshot(self):
-        if datetime.now().minute % self.snapshot_frequency == 0 or self.snapshot_and_exit:
+        # wait at least 60 seconds between snapshots to avoid a race condition
+        return now > (last_snapshot_datetime + timedelta(seconds=70))
+
+    def create_snapshot_on_master(self, now):
+        if self.is_master():
+            return self.create_snapshot(now)
+
+    def create_snapshot(self, now):
+        if now.minute % self.snapshot_frequency == 0 or self.snapshot_and_exit:
             snapshot_manager = SnapshotManager(self.cluster_name, self.instance_id,
                                                self.data_device, self.statsd,
                                                self.log_handler, self.log_level)
@@ -106,8 +117,7 @@ class Main():
                                                   self.hourly_snapshots,
                                                   self.daily_snapshots)
             snapshot_manager.create_snapshot()
-            # have to sleep at least a minute to avoid creating duplicate snapshots
-            time.sleep(70)
+            return now
 
 
 if __name__ == "__main__":
