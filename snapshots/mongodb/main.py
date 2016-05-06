@@ -70,6 +70,7 @@ class Main():
         instance_id = urllib2.urlopen("http://169.254.169.254/latest/meta-data/instance-id").read()
         if not instance_id:
             raise SnapshotManagerException("No instance id could be found using either INSTANCE_ID environment variable or instance metadata")
+        return instance_id
 
     def run(self):
         self.configure_logger()
