@@ -36,7 +36,7 @@ class SnapshotManagerTest(TestCase):
         manager.add_snapshot(Snapshot("snap-1", snapshot1_datetime))
         assert(len(manager.get_sorted_snapshots()) == 1)
 
-        manager.remove_old_snapshots(current_datetime, 0, 0)
+        manager.remove_old_snapshots(current_datetime, 180, 0, 0)
         assert(len(manager.get_sorted_snapshots()) == 1)
 
     def test_remove_sub_hour_snapshots(self):
@@ -46,7 +46,7 @@ class SnapshotManagerTest(TestCase):
         manager.add_snapshot(Snapshot("snap-1", snapshot1_datetime))
         assert(len(manager.get_sorted_snapshots()) == 1)
 
-        manager.remove_old_snapshots(current_datetime, 0, 0)
+        manager.remove_old_snapshots(current_datetime, 180, 0, 0)
         assert(len(manager.get_sorted_snapshots()) == 0)
 
     def test_keep_hourly_snapshots(self):
@@ -56,7 +56,7 @@ class SnapshotManagerTest(TestCase):
         manager.add_snapshot(Snapshot("snap-1", snapshot1_datetime))
         assert(len(manager.get_sorted_snapshots()) == 1)
 
-        manager.remove_old_snapshots(current_datetime, 4, 0)
+        manager.remove_old_snapshots(current_datetime, 180, 4, 0)
         assert(len(manager.get_sorted_snapshots()) == 1)
 
     def test_remove_hourly_snapshots(self):
@@ -70,7 +70,7 @@ class SnapshotManagerTest(TestCase):
         manager.add_snapshot(Snapshot("snap-3", snapshot3_datetime))
         assert(len(manager.get_sorted_snapshots()) == 3)
 
-        manager.remove_old_snapshots(current_datetime, 4, 0)
+        manager.remove_old_snapshots(current_datetime, 180, 4, 0)
         assert(len(manager.get_sorted_snapshots()) == 1)
         assert(manager.get_sorted_snapshots()[0].snapshot_id == "snap-3")
 
@@ -81,7 +81,7 @@ class SnapshotManagerTest(TestCase):
         manager.add_snapshot(Snapshot("snap-1", snapshot1_datetime))
         assert(len(manager.get_sorted_snapshots()) == 1)
 
-        manager.remove_old_snapshots(current_datetime, 0, 10)
+        manager.remove_old_snapshots(current_datetime, 180, 0, 10)
         assert(len(manager.get_sorted_snapshots()) == 1)
 
     def test_remove_daily_snapshots(self):
@@ -95,6 +95,6 @@ class SnapshotManagerTest(TestCase):
         manager.add_snapshot(Snapshot("snap-3", snapshot3_datetime))
         assert(len(manager.get_sorted_snapshots()) == 3)
 
-        manager.remove_old_snapshots(current_datetime, 24, 10)
+        manager.remove_old_snapshots(current_datetime, 180, 24, 10)
         assert(len(manager.get_sorted_snapshots()) == 1)
         assert(manager.get_sorted_snapshots()[0].snapshot_id == "snap-3")

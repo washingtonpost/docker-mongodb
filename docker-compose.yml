@@ -1,27 +1,29 @@
-mongos:
-  container_name: mongos
-  command: --configdb="configdb:27019"
-  ports:
-    - "27017:27017"
-  environment:
-    MONGODB_REPL_SET: rs0
-mongodb:
-  container_name: mongodb 
-  command: --shardsvr --dbpath /data/db
-  ports:
-    - "27018:27018"
-  environment:
-    MONGODB_PORT: 27018 
-    MONGODB_REPL_SET: rs0
-configdb:
-  container_name: configdb 
-  command: --configsvr --wiredTigerCacheSizeGB=1 --dbpath /data/db
-  ports:
-    - "27019:27019"
-  environment:
-    MONGODB_PORT: 27019 
-    MONGODB_REPL_SET: cfgrs0
-snapshots:
-  container_name: snapshots 
-  links:
-    - mongodb
+version: "2"
+services:
+  mongos:
+    container_name: mongos
+    command: --configdb="configdb:27019"
+    ports:
+      - "27017:27017"
+    environment:
+      MONGODB_REPL_SET: rs0
+  mongodb:
+    container_name: mongodb 
+    command: --shardsvr --dbpath /data/db
+    ports:
+      - "27018:27018"
+    environment:
+      MONGODB_PORT: 27018 
+      MONGODB_REPL_SET: rs0
+  configdb:
+    container_name: configdb 
+    command: --configsvr --wiredTigerCacheSizeGB=1 --dbpath /data/db
+    ports:
+      - "27019:27019"
+    environment:
+      MONGODB_PORT: 27019 
+      MONGODB_REPL_SET: cfgrs0
+  snapshots:
+    container_name: snapshots 
+    links:
+      - mongodb

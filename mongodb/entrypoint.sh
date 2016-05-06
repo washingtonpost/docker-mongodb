@@ -17,7 +17,7 @@ function auth_initiate() {
     sleep 1
   done
 
-  mongo localhost:$MONGODB_PORT/admin --eval "printjson(db.createUser({user: \"admin\", pwd: \"${MONGODB_ADMIN_PASSWORD}\", roles: [{role: \"root\", db: \"admin\"}, {role: \"userAdminAnyDatabase\", db: \"admin\"}, {role: \"readAnyDatabase\", db: \"admin\"}]}))"
+  mongo localhost:$MONGODB_PORT/admin --eval "if(!db.getUser(\"admin\")) { printjson(db.createUser({user: \"admin\", pwd: \"${MONGODB_ADMIN_PASSWORD}\", roles: [{role: \"root\", db: \"admin\"}, {role: \"userAdminAnyDatabase\", db: \"admin\"}, {role: \"readAnyDatabase\", db: \"admin\"}]})) }"
 
   echo 'killing mongodb after auth initiation'
   kill -2 $pid
