@@ -4,6 +4,11 @@ This project provides a Dockerized MongoDB cluster with the following features:
 * replica set for high availability (both mongodb and configdb)
 * sharding for easy scale out (mongos) 
 * Authentication and authorization of client requests
+* Automatic backups every 10 minutes 
+* Automatic removal of old backups
+* Simple and safe cluster upgrade process that includes health checks to avoid an outage
+* High speed replacement of servers using the previous snapshot to bootstrap new servers
+* Optional: Comprehensive Datadog monitors including server health, replication lag, and missing backups
 
 # Quick Start
 To use this project do the following:
@@ -22,6 +27,16 @@ cloud-compose cluster up
 ```
 
 # FAQ
+## How do I manage secrets?
+Secrets can be configured using environment variables. [Envdir](https://pypi.python.org/pypi/envdir) is highly recommended as a tool for switching between sets of environment variables in case you need to manage multiple clusters.
+At a minimum you will need AWS_ACCESS_KEY_ID, AWS_REGION, and AWS_SECRET_ACCESS_KEY. It is highly recommend that you also set MONGODB_ADMIN_PASSWORD to enable authentication.
+
+## How do I configure the datadog metrics?
+Make sure you have the already datadog agent installed in your base image. You can then configure datadog metrics by setting the following environment variables DATADOG_API_KEY and DATADOG_APP_KEY. Then create a custom cluster.sh by copying docker-mongodb/cloud-compose/templates/cluster.sh to a local directory called templates. Then add the following line to the bottom of the cluster.sh file to include the default datadog.mongodb.sh in your cloud_init script. 
+```
+{% include "datadog.mongodb.sh" %}
+```
+
 ## What security group rules are needed?
 Once you create an AWS security group make sure to add the following rules to it:
 
@@ -52,6 +67,14 @@ mongo localhost:27017/$DB_NAME --eval 'printjson(db.createUser({user: "$DB_USER"
 ```
 
 On each server there will be a shell alias called ``mongo`` which contains the parameters to connect to the database as the ``admin`` user. You can type ``alias mongo`` to see those command options in case you want to make a local alias for convenience.
+
+## How do I change the backup frequency and retention?
+Mongodb backups are implemented as ELB snapshots of the data volume. ELB snapshots are taken every 10 minutes and kept for 6 hours. After 6 hours, hourly snapshots are kept for 24 hours and daily snapshots are kept for 7 days. You can change these values with the following environment variables
+
+* MONGODB_MINUTELY_SNAPSHOTS=360 - minutes to keep sub-hourly snapshots. Default is 360 minutes.
+* MONGODB_HOURLY_SNAPSHOTS=24 - hours to keep the hourly snapshots. Defaults to 24 hours.
+* MONGODB_DAILY_SNAPSHOTS=7 - days to keep daily snapshots. Defaults to 7 days.
+* MONGODB_SNAPSHOT_FREQUENCY=10 - minutes between snapshots. Default is 10 minutes. Valid values are 5, 10, 15, or 20 minutes.
 
 ## How do I do a subtree merge for sharing config files?
 A subtree merge is an alternative to a Git submodules for copying the contents of one Github repo into another. It is easier to use once it is setup and does not require any special commands (unlike submodules) for others using your repo.
