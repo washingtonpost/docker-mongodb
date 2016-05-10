@@ -45,6 +45,9 @@ services:
     {%- if MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
     {%- endif %}
+    {%- if MONGODB_KEYFILE is defined %}
+      MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
+    {%- endif %}
   configdb:
     image: washpost/mongodb:authentication
     restart: always
@@ -64,6 +67,9 @@ services:
       NODE_LIST: node0,node1,node2
     {%- if MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
+    {%- endif %}
+    {%- if MONGODB_KEYFILE is defined %}
+      MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
     {%- endif %}
   snapshots:
     image: washpost/mongodb-snapshots:authentication

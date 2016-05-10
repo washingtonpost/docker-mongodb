@@ -99,7 +99,11 @@ if [ "$1" = 'mongod' ]; then
       auth_initiate "$@"
     fi
 
-    echo "$MONGODB_ADMIN_PASSWORD" | base64 > /tmp/mongodb-keyfile
+    if [[ "$MONGODB_KEYFILE" ]]; then
+      echo "$MONGODB_KEYFILE" > /tmp/mongodb-keyfile
+    else
+      echo "$MONGODB_ADMIN_PASSWORD" | base64 > /tmp/mongodb-keyfile
+    fi
     chmod 600 /tmp/mongodb-keyfile
     chown mongodb /tmp/mongodb-keyfile
     params="$params --keyFile=/tmp/mongodb-keyfile"
