@@ -107,3 +107,36 @@ git remote add -f docker-mongodb git@github.com:washingtonpost/docker-mongodb.gi
 git pull -s subtree docker-mongodb master
 ```
 
+## How do I replace a server?
+Make sure to only replace one server at a time to reduce the risk of data loss. If the server is not already terminated then terminate it. Then run cloud-compose cluster up to restore the node.
+
+## How do I upgrade the entire cluster?
+First make sure the cluster replica sets are healthy by running `mongo --port 27018 --eval 'rs.status()'` and `mongo --port 27019 --eval 'rs.status()'`. All nodes should report a PRIMARY or SECONDARY state. Then follow the steps for replacing a server for each node in the cluster. Check the status of the replica sets in between each server to make sure the cluster is healthy before proceeding with the next node.
+
+## How do I upgrade the instance size or disk space?
+First change the instance size or disk space parameters in the cloud-compose.yml. Then follow the steps for upgrading a cluster.
+
+## How do I restore the database to a point in time?
+You can select the exact snapshot to restore a cluster from by specifiying the `snapshot` option for the data volume in the cloud-compose.yml. Make sure to remove the snapshot option from the cloud-compose.yml afterwards.
+
+Example cloud-compose.yml
+```
+    volumes:
+      - name: data
+        snapshot: snap-abc123
+        size: 10G
+        block: /dev/xvdc
+        file_system: ext4
+        meta:
+          format: true
+          mount: /data/mongodb
+```
+
+## How do I clone a cluster?
+You can clone a cluster by starting from an existing snapshot of another cluster. First find the relevant snapshot ID for the cluster you want to clone. Then create a copy of the cloud-compose.yml and change the cluster name and IP addresses. Set the `snapshot` option for the data volume as specified above. Then run cloud-compose cluster up to start the cluster from that snapshot. Make sure to remove the snapshot option from the cloud-compose.yml afterwards.
+
+## How do I startup a cluster without starting from a snapshot?
+If you want to recreate a cluster, but don't want to use an existing snapshot for the data volume pass the --no-use-snapshots option to cloud-compose cluster up.
+
+## How do I terminate a cluster?
+Once a cluster is terminated the data will be destroyed. If you have snapshots then you will be able to restore to the last snapshot. To terminate the clsuter run cloud-compose cluster down.
