@@ -1,2 +1,2 @@
-cloud-compose==0.1.0
-cloud-compose-cluster==0.1.0
+cloud-compose==0.2.0
+cloud-compose-cluster==0.3.0
