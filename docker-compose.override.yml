@@ -1,29 +1,41 @@
-mongos:
-  build: mongos 
-  environment:
-    MONGODB_SHARD: mongodb
-    MONGODB_HOST: mongodb
-    CONFIGDB_HOST: configdb
-    NODE_ID: 0
-  links:
-    - configdb
-    - mongodb 
-mongodb:
-  build: mongodb 
-  hostname: mongodb
-  extra_hosts:
-    - "mongodb:127.0.0.1"
-  environment:
-    NODE_ID: 0
-    CLUSTER_SIZE: 1
-    NODE_LIST: mongodb
-  links:
-    - configdb
-configdb:
-  build: mongodb 
-  hostname: configdb 
-  extra_hosts:
-    - "configdb:127.0.0.1"
-  environment:
-    NODE_ID: 0
-    NODE_LIST: configdb 
+version: "2"
+services:
+  mongos:
+    build: mongos 
+    environment:
+      MONGODB_SHARD: mongodb
+      MONGODB_HOST: mongodb
+      CONFIGDB_HOST: configdb
+      MONGODB_ADMIN_PASSWORD: 123456789
+      NODE_ID: 0
+    links:
+      - configdb
+      - mongodb 
+  mongodb:
+    build: mongodb 
+    hostname: mongodb
+    extra_hosts:
+      - "mongodb:127.0.0.1"
+    environment:
+      NODE_ID: 0
+      CLUSTER_SIZE: 1
+      NODE_LIST: mongodb
+      MONGODB_ADMIN_PASSWORD: 123456789
+    links:
+      - configdb
+  configdb:
+    build: mongodb 
+    hostname: configdb 
+    extra_hosts:
+      - "configdb:127.0.0.1"
+    environment:
+      NODE_ID: 0
+      NODE_LIST: configdb 
+      MONGODB_ADMIN_PASSWORD: 123456789
+  snapshots:
+    build: snapshots 
+    hostname: snapshots 
+    environment:
+      CLUSTER_NAME: localhost 
+      MONGODB_DEVICE_NAME: local
+      INSTANCE_ID: localhost

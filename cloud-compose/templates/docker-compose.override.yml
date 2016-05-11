@@ -1,35 +1,101 @@
-mongos:
-  image: washpost/mongos:3.2
-  command: --configdb="${INSTANCE_IP}:27019"
-  restart: always
-  extra_hosts:
-  {%- for node in aws.nodes %}
-    - "node{{node.id}}:{{node.ip}}" 
-  {%- endfor %}
-  environment:
-    MONGODB_SHARD: node0 
-    MONGODB_HOST: ${INSTANCE_IP}
-    CONFIGDB_HOST: ${INSTANCE_IP}
-    NODE_ID: ${NODE_ID}
-mongodb:
-  image: washpost/mongodb:3.2
-  extra_hosts:
-  {%- for node in aws.nodes %}
-    - "node{{node.id}}:{{node.ip}}" 
-  {%- endfor %}
-  volumes:
-    - "/data/mongodb/mongodb:/data/db"
-  restart: always
-  environment:
-    NODE_ID: ${NODE_ID} 
-    NODE_LIST: node0,node1,node2
-configdb:
-  image: washpost/mongodb:3.2
-  restart: always
-  extra_hosts:
-  {%- for node in aws.nodes %}
-    - "node{{node.id}}:{{node.ip}}" 
-  {%- endfor %}
-  environment:
-    NODE_ID: ${NODE_ID} 
-    NODE_LIST: node0,node1,node2
+version: "2"
+services:
+  mongos:
+    image: washpost/mongos:3.2
+    command: --configdb="${INSTANCE_IP}:27019"
+    restart: always
+    extra_hosts:
+    {%- for node in aws.nodes %}
+      - "node{{node.id}}:{{node.ip}}" 
+    {%- endfor %}
+    {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
+    logging: 
+      driver: awslogs
+      options:
+        awslogs-group: {{ logging.meta.group }}
+        awslogs-stream: mongos-node-${NODE_ID}
+    {%- endif %}
+    environment:
+      MONGODB_SHARD: node0 
+      MONGODB_HOST: ${INSTANCE_IP}
+      CONFIGDB_HOST: ${INSTANCE_IP}
+      NODE_ID: ${NODE_ID}
+    {%- if MONGODB_ADMIN_PASSWORD is defined %}
+      MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
+    {%- endif %}
+  mongodb:
+    image: washpost/mongodb:3.2
+    extra_hosts:
+    {%- for node in aws.nodes %}
+      - "node{{node.id}}:{{node.ip}}" 
+    {%- endfor %}
+    volumes:
+      - "/data/mongodb/mongodb:/data/db"
+    restart: always
+    {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
+    logging: 
+      driver: awslogs
+      options:
+        awslogs-group: {{ logging.meta.group }}
+        awslogs-stream: mongodb-node-${NODE_ID}
+    {%- endif %}
+    environment:
+      NODE_ID: ${NODE_ID} 
+      NODE_LIST: node0,node1,node2
+    {%- if MONGODB_ADMIN_PASSWORD is defined %}
+      MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
+    {%- endif %}
+    {%- if MONGODB_KEYFILE is defined %}
+      MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
+    {%- endif %}
+  configdb:
+    image: washpost/mongodb:3.2
+    restart: always
+    extra_hosts:
+    {%- for node in aws.nodes %}
+      - "node{{node.id}}:{{node.ip}}" 
+    {%- endfor %}
+    {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
+    logging: 
+      driver: awslogs
+      options:
+        awslogs-group: {{ logging.meta.group }}
+        awslogs-stream: configdb-node-${NODE_ID}
+    {%- endif %}
+    environment:
+      NODE_ID: ${NODE_ID} 
+      NODE_LIST: node0,node1,node2
+    {%- if MONGODB_ADMIN_PASSWORD is defined %}
+      MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
+    {%- endif %}
+    {%- if MONGODB_KEYFILE is defined %}
+      MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
+    {%- endif %}
+  snapshots:
+    image: washpost/mongodb-snapshots:3.2
+    restart: always
+    {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
+    logging: 
+      driver: awslogs
+      options:
+        awslogs-group: {{ logging.meta.group }}
+        awslogs-stream: snapshots-node-${NODE_ID}
+    {%- endif %}
+    environment:
+      CLUSTER_NAME: {{ name }}
+      MONGODB_DEVICE_NAME: {{ aws.volumes[2].block }}
+    {%- if MONGODB_ADMIN_PASSWORD is defined %}
+      MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
+    {%- endif %}
+    {%- if MONGODB_MINUTELY_SNAPSHOTS is defined %}
+      MONGODB_MINUTELY_SNAPSHOTS: {{ MONGODB_MINUTELY_SNAPSHOTS }}
+    {%- endif %}
+    {%- if MONGODB_HOURLY_SNAPSHOTS is defined %}
+      MONGODB_HOURLY_SNAPSHOTS: {{ MONGODB_HOURLY_SNAPSHOTS }}
+    {%- endif %}
+    {%- if MONGODB_DAILY_SNAPSHOTS is defined %}
+      MONGODB_DAILY_SNAPSHOTS: {{ MONGODB_DAILY_SNAPSHOTS }}
+    {%- endif %}
+    {%- if MONGODB_SNAPSHOT_FREQUENCY is defined %}
+      MONGODB_SNAPSHOT_FREQUENCY: {{ MONGODB_SNAPSHOT_FREQUENCY }}
+    {%- endif %}

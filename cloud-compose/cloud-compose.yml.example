@@ -3,6 +3,10 @@ cluster:
   search_path:
     - docker-mongodb
     - docker-mongodb/cloud-compose/templates
+  logging:
+    driver: awslogs 
+    meta:
+      group: /cloud-compose/${CLUSTER_NAME}
   aws:
     ami: ${IMAGE_ID}
     username: ${IMAGE_USERNAME}
@@ -12,6 +16,7 @@ cluster:
     ebs_optimized: false
     instance_type: t2.medium
     keypair: drydock
+    instance_policy: '{ "Statement": [ { "Action": [ "ec2:CreateSnapshot", "ec2:CreateTags", "ec2:DeleteSnapshot", "ec2:DescribeInstances", "ec2:DescribeSnapshotAttribute", "ec2:DescribeSnapshots", "ec2:DescribeVolumeAttribute", "ec2:DescribeVolumeStatus", "ec2:DescribeVolumes", "ec2:ModifySnapshotAttribute", "ec2:ResetSnapshotAttribute", "logs:CreateLogStream", "logs:PutLogEvents" ], "Effect": "Allow", "Resource": [ "*" ] } ] }'
     volumes:
       - name: root
         size: 30G
