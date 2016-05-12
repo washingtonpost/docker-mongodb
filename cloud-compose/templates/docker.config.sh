@@ -1,7 +1,4 @@
 # docker.config.sh
-cat <<- 'EOF' > /home/{{ aws.username }}/.dockercfg
-{"quay.io":{"auth":"{{ QUAY_IO_AUTH }}","email":""{{'}}'}}
-EOF
 chown {{ aws.username }}:{{ aws.username }} /home/{{ aws.username }}/.dockercfg
 chmod 0644 /home/{{ aws.username }}/.dockercfg
 groupadd docker
