@@ -92,7 +92,7 @@ git merge -s ours --no-commit docker-mongodb/master
 # make a directory to merge the changes into
 mkdir docker-mongodb
 # actually do the merge
-git read-tree --prefix=mongodb/foobar/docker-mongodb/ -u docker-mongodb/master
+git read-tree --prefix=mongodb/docker-mongodb/ -u docker-mongodb/master
 # commit the changes
 git commit -m 'Added docker-mongodb subtree'
 ```
