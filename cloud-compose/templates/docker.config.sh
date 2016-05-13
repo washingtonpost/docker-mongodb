@@ -1,4 +1,6 @@
 # docker.config.sh
+groupadd docker
+usermod -aG docker {{ aws.username }}
 cat << EOF > /usr/lib/systemd/system/docker.service
 [Unit]
 Description=Docker Application Container Engine

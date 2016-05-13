@@ -1,18 +1,17 @@
 cluster:
   name: ${CLUSTER_NAME}
   search_path:
-    - docker-mongodb
-    - docker-mongodb/cloud-compose/templates
+    - ../docker-mongodb
+    - ../docker-mongodb/cloud-compose/templates
   logging:
     driver: awslogs 
     meta:
       group: /cloud-compose/${CLUSTER_NAME}
   aws:
-    ami: ${IMAGE_ID}
+    ami: ${IMAGE_ID} or ${IMAGE_NAME_TAG}
     username: ${IMAGE_USERNAME}
     terminate_protection: false
     security_groups: ${SECURITY_GROUP_ID}
-    vpc: ${VPC_ID}
     ebs_optimized: false
     instance_type: t2.medium
     keypair: drydock
