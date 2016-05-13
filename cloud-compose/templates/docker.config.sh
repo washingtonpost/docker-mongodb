@@ -1,6 +1,4 @@
 # docker.config.sh
-chown {{ aws.username }}:{{ aws.username }} /home/{{ aws.username }}/.dockercfg
-chmod 0644 /home/{{ aws.username }}/.dockercfg
 groupadd docker
 usermod -aG docker {{ aws.username }}
 cat << EOF > /usr/lib/systemd/system/docker.service
