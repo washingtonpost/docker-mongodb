@@ -76,7 +76,7 @@ Mongodb backups are implemented as ELB snapshots of the data volume. ELB snapsho
 * MONGODB_DAILY_SNAPSHOTS=7 - days to keep daily snapshots. Defaults to 7 days.
 * MONGODB_SNAPSHOT_FREQUENCY=10 - minutes between snapshots. Default is 10 minutes. Valid values are 5, 10, 15, or 20 minutes.
 
-## How do I do sharing config files?
+## How do I share config files?
 Since most of the config files are common between MongoDB clusters, it is desirable to directly share the configuration between projects. The recommend directory structure is to have docker-mongodb sub-directory and then a sub-directory for each cluster. For example if I had a test and prod mongodb cluster my directory structure would be:
 
 ```
