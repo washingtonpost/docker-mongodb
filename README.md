@@ -153,3 +153,6 @@ If you want to recreate a cluster, but don't want to use an existing snapshot fo
 
 ## How do I terminate a cluster?
 Once a cluster is terminated the data will be destroyed. If you have snapshots then you will be able to restore to the last snapshot. To terminate the clsuter run cloud-compose cluster down.
+
+# Contributing
+If you want to contribute to the project see the [contributing guide](CONTRIBUTING.md).
