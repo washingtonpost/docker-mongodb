@@ -8,7 +8,7 @@ cluster:
     meta:
       group: /cloud-compose/${CLUSTER_NAME}
   aws:
-    ami: ${IMAGE_ID}
+    ami: ${IMAGE_ID} or ${IMAGE_NAME_TAG}
     username: ${IMAGE_USERNAME}
     terminate_protection: false
     security_groups: ${SECURITY_GROUP_ID}
