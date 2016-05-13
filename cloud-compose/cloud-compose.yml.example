@@ -1,8 +1,8 @@
 cluster:
   name: ${CLUSTER_NAME}
   search_path:
-    - docker-mongodb
-    - docker-mongodb/cloud-compose/templates
+    - ../docker-mongodb
+    - ../docker-mongodb/cloud-compose/templates
   logging:
     driver: awslogs 
     meta:
