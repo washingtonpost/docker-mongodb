@@ -97,7 +97,7 @@ To do the initial merge you will need to create a git remote, then merge it into
 
 ```bash
 # change to the cluster sub-directory
-cd my-configs/mongodb/foobar
+cd my-configs/mongodb
 # add the git remote
 git remote add -f docker-mongodb git@github.com:washingtonpost/docker-mongodb.git
 # pull in the git remote, but don't commit it
