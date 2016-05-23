@@ -1,4 +1,3 @@
-{%- if DATADOG_API_KEY is defined %}
 # datadog.mongodb.sh 
 cat <<- 'EOF' > /etc/dd-agent/conf.d/mongo.yaml
 init_config:
@@ -19,4 +18,3 @@ echo '{{node.ip}} node{{node.id}}' >> /etc/hosts
 sh -c "sed 's/api_key:.*/api_key: {{DATADOG_API_KEY}}/' /etc/dd-agent/datadog.conf.example > /etc/dd-agent/datadog.conf"
 echo 'bind_host: 0.0.0.0' >> /etc/dd-agent/datadog.conf
 service datadog-agent restart
-{%- endif %}
