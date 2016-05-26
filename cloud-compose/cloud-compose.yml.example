@@ -10,7 +10,6 @@ cluster:
   aws:
     ami: ${IMAGE_ID} or ${IMAGE_NAME_TAG}
     username: ${IMAGE_USERNAME}
-    terminate_protection: false
     security_groups: ${SECURITY_GROUP_ID}
     ebs_optimized: false
     instance_type: t2.medium
