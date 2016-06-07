@@ -49,6 +49,8 @@ cluster:
         ip: ${CLUSTER_NODE_2_IP}
         subnet: ${CLUSTER_NODE_2_SUBNET}
 datadog:
+  name: mongodb-snbx
+  use_cluster_prefix: false
   options:
     notify_no_data: true
     no_data_timeframe: 480
@@ -57,21 +59,21 @@ datadog:
       tag: mongodb-replication-lag
       message: "The mongodb replication is failing behind." 
       name: "MongoDB Replication Lag"
-      query: 'max(last_1h):avg:mongodb.replset.replicationlag{clustername:%s} by {nodeid} < -10'
+      query: 'max(last_1h):avg:mongodb.replset.replicationlag{clustername:%(name)s} by {nodeid} < -10'
       options:
         notify_no_data: false
     -
       tag: mongodb-replset-status
       message: "The mongodb replication is failing behind." 
       name: "MongoDB Replica Set Heath"
-      query: 'max(last_1h):avg:mongodb.replset.health{clustername:%s} < 1'
+      query: 'max(last_1h):avg:mongodb.replset.health{clustername:%(name)s} < 1'
     -
       tag: mongodb-host-status
       message: "The mongodb replication status on {{host.name}} indicates an error condition. See https://docs.mongodb.org/manual/reference/replica-states/ for details." 
       name: "MongoDB Host Status"
-      query: 'max(last_1h):avg:mongodb.replset.state{clustername:%s} by {host} > 2'
+      query: 'max(last_1h):avg:mongodb.replset.state{clustername:%(name)s} by {host} > 2'
     -
       tag: mongodb-backups-missing
       message: "Some mongodb backups are missing in the last hour. Check to see why the mongodb-backups container is not working on node-0 of the cluster." 
       name: "MongoDB Missing Backups"
-      query: 'min(last_2h):min:mongodb.backups.missing{clustername:%s} > 0'
+      query: 'min(last_2h):min:mongodb.backups.missing{clustername:%(name)s} > 0'
