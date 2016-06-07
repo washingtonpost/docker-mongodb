@@ -49,6 +49,9 @@ cluster:
         ip: ${CLUSTER_NODE_2_IP}
         subnet: ${CLUSTER_NODE_2_SUBNET}
 datadog:
+  options:
+    notify_no_data: true
+    no_data_timeframe: 480
   monitors:
     -
       tag: mongodb-replication-lag
