@@ -58,6 +58,8 @@ datadog:
       message: "The mongodb replication is failing behind." 
       name: "MongoDB Replication Lag"
       query: 'max(last_1h):avg:mongodb.replset.replicationlag{clustername:%s} by {nodeid} < -10'
+      options:
+        notify_no_data: false
     -
       tag: mongodb-replset-status
       message: "The mongodb replication is failing behind." 
