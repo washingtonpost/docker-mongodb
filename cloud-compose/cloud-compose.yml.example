@@ -50,7 +50,7 @@ cluster:
         subnet: ${CLUSTER_NODE_2_SUBNET}
 datadog:
   name: mongodb-snbx
-  use_cluster_prefix: false
+  use_cluster_prefix: true
   options:
     notify_no_data: true
     no_data_timeframe: 480
@@ -60,8 +60,6 @@ datadog:
       message: "The mongodb replication is failing behind." 
       name: "MongoDB Replication Lag"
       query: 'max(last_1h):avg:mongodb.replset.replicationlag{clustername:%(name)s} by {nodeid} < -10'
-      options:
-        notify_no_data: false
     -
       tag: mongodb-replset-status
       message: "The mongodb replication is failing behind." 
