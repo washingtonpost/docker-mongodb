@@ -152,7 +152,7 @@ You can clone a cluster by starting from an existing snapshot of another cluster
 If you want to recreate a cluster, but don't want to use an existing snapshot for the data volume pass the --no-use-snapshots option to cloud-compose cluster up.
 
 ## How do I terminate a cluster?
-Once a cluster is terminated the data will be destroyed. If you have snapshots then you will be able to restore to the last snapshot. To terminate the clsuter run cloud-compose cluster down.
+Once a cluster is terminated the data will be destroyed. If you have snapshots then you will be able to restore to the last snapshot. To terminate the cluster run cloud-compose cluster down.
 
 # Contributing
 If you want to contribute to the project see the [contributing guide](CONTRIBUTING.md).
