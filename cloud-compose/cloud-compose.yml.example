@@ -49,7 +49,7 @@ cluster:
         ip: ${CLUSTER_NODE_2_IP}
         subnet: ${CLUSTER_NODE_2_SUBNET}
 datadog:
-  name: mongodb-snbx
+  name: ${CLUSTER_NAME}
   use_cluster_prefix: true
   options:
     notify_no_data: true
