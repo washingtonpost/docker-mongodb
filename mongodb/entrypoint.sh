@@ -110,7 +110,7 @@ if [ "$1" = 'mongod' ]; then
   fi
 
 
-  if [[ "MONGODB_REPL_SET" ]]; then
+  if [[ "$MONGODB_REPL_SET" ]]; then
     params="$params --replSet ${MONGODB_REPL_SET}"
   fi
 
