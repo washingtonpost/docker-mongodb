@@ -50,6 +50,9 @@ cluster:
         subnet: ${CLUSTER_NODE_2_SUBNET}
 datadog:
   name: ${CLUSTER_NAME}
+  notify: 
+    - '@slack-${TEAM}'
+    - '@opsgenie-${TEAM}'
   use_cluster_prefix: true
   options:
     notify_no_data: true
@@ -75,3 +78,33 @@ datadog:
       message: "Some mongodb backups are missing in the last hour. Check to see why the mongodb-backups container is not working on node-0 of the cluster." 
       name: "MongoDB Missing Backups"
       query: 'min(last_2h):min:mongodb.backups.missing{clustername:%(name)s} > 0'
+    - 
+      tag: high-cpu-load
+      message: 'The CPU load is too high on server {{host.name}}.'
+      name: 'High CPU Load'
+      query: 'avg(last_4h):avg:system.cpu.idle{clustername:%(name)s} by {host} < 25'
+    -
+      tag: low-root-disk-space
+      message: 'Running out of root disk space on server {{host.name}}'
+      name: 'Low Root Disk Space'
+      query: 'avg(last_1h):avg:system.disk.free{clustername:%(name)s,device:/dev/xvda1} by {host} < 10000000000'
+    -
+      tag: low-data-disk-space
+      message: 'Running out of data disk space on server {{host.name}}'
+      name: 'Low /data Disk Space'
+      query: 'avg(last_1h):avg:system.disk.free{clustername:%(name)s,device:/dev/xvdc} by {host} < 10000000000'    
+    -
+      tag: low-docker-data
+      message: 'Running low on LVM volume space for Docker data on server {{host.name}}.'
+      name: 'Low Docker Data Volume'
+      query: 'avg(last_1h):avg:docker.info.data_space_free{clustername:%(name)s} by {host} < 1000000000'
+    -
+      tag: low-docker-metadata
+      message: 'Running low on LVM volume space for Docker metadata on server {{host.name}}.'
+      name: 'Low Docker Metadata'
+      query: 'avg(last_1h):avg:docker.info.metadata_space_free{clustername:%(name)s} by {host} < 100000000'
+    -
+      tag: low-usable-memory
+      message: 'The usable memory is too low on server {{host.name}}.'
+      name: 'Low Usable Memory'
+      query: 'avg(last_15m):avg:system.mem.pct_usable{clustername:%(name)s} by {host} < 0.1'
