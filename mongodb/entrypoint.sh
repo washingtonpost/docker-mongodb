@@ -33,6 +33,18 @@ function auth_initiate() {
   done
 }
 
+function is_replica_set() {
+  echo $NODE_LIST | sed -n 1'p' | tr ',' '\n' | while read node; do
+    echo "$mongo $node:$MONGODB_PORT/admin --quiet --eval \"rs.status().set\" | wc -l"
+    IS_REPL_SET=$($mongo $node:$MONGODB_PORT/admin --quiet --eval "rs.status().set" | wc -l)
+    if [ "$IS_REPL_SET" != "0" ]; then
+      echo "$node already a replica set"
+      return 0
+    fi
+  done
+  return 1
+}
+
 function rs_initiate() {
   if [ -z "$MONGODB_PORT" ]; then
     echo "MONGODB_PORT environment variable must be set"
@@ -49,37 +61,30 @@ function rs_initiate() {
     sleep 1
   done
 
-  echo $NODE_LIST | sed -n 1'p' | tr ',' '\n' | while read node; do
-    echo "$mongo $node:$MONGODB_PORT/admin --quiet --eval \"rs.status().set\" | wc -l"
-    IS_REPL_SET=$($mongo $node:$MONGODB_PORT/admin --quiet --eval "rs.status().set" | wc -l)
-    if [ "$IS_REPL_SET" != "0" ]; then
-      echo "($IS_REPL_SET) $node already a replica set"
-      return
-    fi
-  done
+  if ! is_replica_set; then
+    echo "node$NODE_ID initiating replica set..."
+    local first_node=0
+    echo $NODE_LIST | sed -n 1'p' | tr ',' '\n' | while read node; do
+      if [ "$first_node" == "0" ]; then
+        first_node=1
+        $mongo localhost:$MONGODB_PORT/admin --quiet --eval "printjson(rs.initiate())"
+        $mongo localhost:$MONGODB_PORT/admin --quiet --eval "cfg = rs.conf(); cfg.members[0].host = \"$node:$MONGODB_PORT\"; printjson(rs.reconfig(cfg))"
 
-  echo "node$NODE_ID initiating replica set..."
-  local first_node=0
-  echo $NODE_LIST | sed -n 1'p' | tr ',' '\n' | while read node; do
-    if [ "$first_node" == "0" ]; then
-      first_node=1
-      $mongo localhost:$MONGODB_PORT/admin --quiet --eval "printjson(rs.initiate())"
-      $mongo localhost:$MONGODB_PORT/admin --quiet --eval "cfg = rs.conf(); cfg.members[0].host = \"$node:$MONGODB_PORT\"; printjson(rs.reconfig(cfg))"
+        while ! $mongo localhost:$MONGODB_PORT/admin --quiet --eval "db.isMaster().ismaster" | grep true
+        do
+          echo "waiting for $node to become primary"
+          sleep 1
+        done
 
-      while ! $mongo localhost:$MONGODB_PORT/admin --quiet --eval "db.isMaster().ismaster" | grep true
-      do
-        echo "waiting for $node to become primary"
-        sleep 1
-      done
-
-    else
-      while $mongo localhost:$MONGODB_PORT/admin --quiet --eval "printjson(rs.add(\"$node:$MONGODB_PORT\"))" | grep -l '"ok"\s*:\s*0'
-      do
-        echo "failed to add $node to mongodb replica set"
-        sleep 1
-      done
-    fi
-  done
+      else
+        while $mongo localhost:$MONGODB_PORT/admin --quiet --eval "printjson(rs.add(\"$node:$MONGODB_PORT\"))" | grep -l '"ok"\s*:\s*0'
+        do
+          echo "failed to add $node to mongodb replica set"
+          sleep 1
+        done
+      fi
+    done
+  fi
 }
 
 if [ "${1:0:1}" = '-' ]; then
