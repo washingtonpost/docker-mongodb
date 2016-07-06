@@ -49,12 +49,14 @@ function rs_initiate() {
     sleep 1
   done
 
-  echo "$mongo localhost:$MONGODB_PORT/admin --quiet --eval \"rs.status().set\" | wc -l)"
-  IS_REPL_SET=$($mongo localhost:$MONGODB_PORT/admin --quiet --eval "rs.status().set" | wc -l)
-  if [ "$IS_REPL_SET" != "0" ]; then
-    echo "already a replica set"
-    return
-  fi
+  echo $NODE_LIST | sed -n 1'p' | tr ',' '\n' | while read node; do
+    echo "$mongo $node:$MONGODB_PORT/admin --quiet --eval \"rs.status().set\" | wc -l"
+    IS_REPL_SET=$($mongo $node:$MONGODB_PORT/admin --quiet --eval "rs.status().set" | wc -l)
+    if [ "$IS_REPL_SET" != "0" ]; then
+      echo "already a replica set"
+      return
+    fi
+  done
 
   echo "initiating replica set..."
   local first_node=0
