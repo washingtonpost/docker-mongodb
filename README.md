@@ -69,11 +69,11 @@ mongo localhost:27017/$DB_NAME --eval 'printjson(db.createUser({user: "$DB_USER"
 On each server there will be a shell alias called ``mongo`` which contains the parameters to connect to the database as the ``admin`` user. You can type ``alias mongo`` to see those command options in case you want to make a local alias for convenience.
 
 ## How do I change the backup frequency and retention?
-Mongodb backups are implemented as ELB snapshots of the data volume. ELB snapshots are taken every 10 minutes and kept for 6 hours. After 6 hours, hourly snapshots are kept for 24 hours and daily snapshots are kept for 7 days. You can change these values with the following environment variables
+Mongodb backups are implemented as ELB snapshots of the data volume. ELB snapshots are taken every 10 minutes and kept for 6 hours. After 6 hours, hourly snapshots are kept for 24 hours and daily snapshots are kept for 30 days. You can change these values with the following environment variables
 
 * MONGODB_MINUTELY_SNAPSHOTS=360 - minutes to keep sub-hourly snapshots. Default is 360 minutes.
 * MONGODB_HOURLY_SNAPSHOTS=24 - hours to keep the hourly snapshots. Defaults to 24 hours.
-* MONGODB_DAILY_SNAPSHOTS=7 - days to keep daily snapshots. Defaults to 7 days.
+* MONGODB_DAILY_SNAPSHOTS=7 - days to keep daily snapshots. Defaults to 30 days.
 * MONGODB_SNAPSHOT_FREQUENCY=10 - minutes between snapshots. Default is 10 minutes. Valid values are 5, 10, 15, or 20 minutes.
 
 ## How do I share config files?
