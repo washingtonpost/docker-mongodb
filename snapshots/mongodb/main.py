@@ -49,7 +49,7 @@ class Main():
         self.snapshot_and_exit = environ.get('MONGODB_SNAPSHOT_AND_EXIT', 'false').lower() == 'true'
         self.minutely_snapshots = int(environ.get('MONGODB_MINUTELY_SNAPSHOTS', '360'))
         self.hourly_snapshots = int(environ.get('MONGODB_HOURLY_SNAPSHOTS', '24'))
-        self.daily_snapshots = int(environ.get('MONGODB_DAILY_SNAPSHOTS', '7'))
+        self.daily_snapshots = int(environ.get('MONGODB_DAILY_SNAPSHOTS', '30'))
         self.instance_id = self.get_instance_id()
         self.statsd = DogStatsd(host='172.17.0.1', port=8125)
         self.snapshot_frequency = self.get_snapshot_frequency()
