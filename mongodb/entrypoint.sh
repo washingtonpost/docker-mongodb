@@ -34,7 +34,9 @@ function auth_initiate() {
 }
 
 function is_replica_set() {
-  echo $NODE_LIST | sed -n 1'p' | tr ',' '\n' | while read node; do
+  IFS=',' read -r -a nodes <<< "$NODE_LIST"
+  for node in "${nodes[@]}"
+  do
     echo "$mongo $node:$MONGODB_PORT/admin --quiet --eval \"rs.status().set\" | wc -l"
     IS_REPL_SET=$($mongo $node:$MONGODB_PORT/admin --quiet --eval "rs.status().set" | wc -l)
     if [ "$IS_REPL_SET" != "0" ]; then
@@ -64,7 +66,9 @@ function rs_initiate() {
   if ! is_replica_set; then
     echo "node$NODE_ID initiating replica set..."
     local first_node=0
-    echo $NODE_LIST | sed -n 1'p' | tr ',' '\n' | while read node; do
+    IFS=',' read -r -a nodes <<< "$NODE_LIST"
+    for node in "${nodes[@]}"
+    do
       if [ "$first_node" == "0" ]; then
         first_node=1
         $mongo localhost:$MONGODB_PORT/admin --quiet --eval "printjson(rs.initiate())"
