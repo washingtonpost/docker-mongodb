@@ -37,9 +37,9 @@ function is_replica_set() {
   IFS=',' read -r -a nodes <<< "$NODE_LIST"
   for node in "${nodes[@]}"
   do
-    echo "$mongo $node:$MONGODB_PORT/admin --quiet --eval \"rs.status().set\" | wc -l"
-    IS_REPL_SET=$($mongo $node:$MONGODB_PORT/admin --quiet --eval "rs.status().set" | wc -l)
-    if [ "$IS_REPL_SET" != "0" ]; then
+    echo "$mongo $node:$MONGODB_PORT/admin --quiet --eval \"rs.status().set\" | grep -q \"^${MONGODB_REPL_SET}\""
+    $mongo $node:$MONGODB_PORT/admin --quiet --eval "rs.status().set" | grep -q "^${MONGODB_REPL_SET}"
+    if [ "$?" == "0" ]; then
       echo "$node already a replica set"
       return 0
     fi
