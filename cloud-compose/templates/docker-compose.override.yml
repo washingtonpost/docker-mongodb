@@ -24,7 +24,9 @@ services:
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
     {%- endif %}
   mongodb:
-    {% if mongo and mongo.journal == False %}command: --shardsvr --dbpath /data/db --nojournal{% endif %}
+    {%- if mongo is defined and mongo.journal == False %}
+    command: --shardsvr --dbpath /data/db --nojournal
+    {%- endif %}
     image: washpost/mongodb:3.2
     extra_hosts:
     {%- for node in aws.nodes %}
