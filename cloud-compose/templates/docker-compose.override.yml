@@ -83,7 +83,6 @@ services:
     network_mode: host
     extra_hosts:
       - "mongodb:127.0.0.1"
-    {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
     logging: 
       driver: awslogs
       options:
