@@ -4,7 +4,6 @@ services:
     image: washpost/mongos:3.2
     command: --configdb="${INSTANCE_IP}:27019"
     restart: always
-    network_mode: host
     extra_hosts:
     {%- for node in aws.nodes %}
       - "node{{node.id}}:{{node.ip}}" 
@@ -36,7 +35,6 @@ services:
     volumes:
       - "/data/mongodb/mongodb:/data/db"
     restart: always
-    network_mode: host
     {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
     logging: 
       driver: awslogs
@@ -56,7 +54,6 @@ services:
   configdb:
     image: washpost/mongodb:3.2
     restart: always
-    network_mode: host
     extra_hosts:
     {%- for node in aws.nodes %}
       - "node{{node.id}}:{{node.ip}}" 
@@ -80,9 +77,7 @@ services:
   snapshots:
     image: washpost/mongodb-snapshots:3.2
     restart: always
-    network_mode: host
-    extra_hosts:
-      - "mongodb:127.0.0.1"
+    {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
     logging: 
       driver: awslogs
       options:
