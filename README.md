@@ -27,6 +27,17 @@ cloud-compose cluster up
 ```
 
 # FAQ
+## How do I tune the cluster?
+Most of the MongoDB settings default to sensible values, but if you have a write heavy cluster you may want to change the following options by adding environment variables to your cloud-compose.yml:
+
+* MONGODB_OPLOG_SIZE: 10000
+
+MONGODB_OPLOG_SIZE translates the the command line parameter `--oplogSize`. The value is the number of megabytes for the oplog. You can check if your oplog is big enough by running 1mongo --port 27018 --eval 'rs.printReplicationInfo()'`. If the output shows you have less than 24 hours between the first and last event, you may want to increase the size to be bigger.
+
+* MONGODB_JOURNAL: "false"
+
+MONGODB_JOURNAL translates to the command line parameter of `--nojournal`. If you are running a replicate set you can safely disable this by setting the value to `false` since you will be able to catch up an missed data from another replicat member. Disabling the journal has been show to reduce the start time by nearly 20 minutes for a write heavy cluster.
+
 ## How do I manage secrets?
 Secrets can be configured using environment variables. [Envdir](https://pypi.python.org/pypi/envdir) is highly recommended as a tool for switching between sets of environment variables in case you need to manage multiple clusters.
 At a minimum you will need AWS_ACCESS_KEY_ID, AWS_REGION, and AWS_SECRET_ACCESS_KEY. It is highly recommend that you also set MONGODB_ADMIN_PASSWORD to enable authentication.

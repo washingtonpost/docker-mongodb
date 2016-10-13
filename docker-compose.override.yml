@@ -21,6 +21,8 @@ services:
       CLUSTER_SIZE: 1
       NODE_LIST: mongodb
       MONGODB_ADMIN_PASSWORD: 123456789
+      MONGODB_OPLOG_SIZE: 500
+      MONGODB_JOURNAL: "false"
     links:
       - configdb
   configdb:

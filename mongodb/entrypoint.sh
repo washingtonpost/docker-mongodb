@@ -125,6 +125,14 @@ if [ "$1" = 'mongod' ]; then
     params="$params --replSet ${MONGODB_REPL_SET}"
   fi
 
+  if [[ "$MONGODB_OPLOG_SIZE" ]]; then
+    params="$params --oplogSize ${MONGODB_OPLOG_SIZE}"
+  fi
+
+  if [[ "$MONGODB_JOURNAL" == "false" ]]; then
+    params="$params --nojournal"
+  fi
+
   if [[ "$NODE_ID" == "0" ]]; then
     rs_initiate &
   fi
