@@ -52,7 +52,7 @@ services:
       MONGODB_OPLOG_SIZE: {{ MONGODB_OPLOG_SIZE }}
     {%- endif %}
     {%- if MONGODB_JOURNAL is defined %}
-      MONGODB_JOURNAL: {{ MONGODB_JOURNAL }}
+      MONGODB_JOURNAL: "{{ MONGODB_JOURNAL }}"
     {%- endif %}
   configdb:
     image: washpost/mongodb:3.2
