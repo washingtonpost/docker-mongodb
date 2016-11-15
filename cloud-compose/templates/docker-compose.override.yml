@@ -48,6 +48,12 @@ services:
     {%- if MONGODB_KEYFILE is defined %}
       MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
     {%- endif %}
+    {%- if MONGODB_OPLOG_SIZE is defined %}
+      MONGODB_OPLOG_SIZE: {{ MONGODB_OPLOG_SIZE }}
+    {%- endif %}
+    {%- if MONGODB_JOURNAL is defined %}
+      MONGODB_JOURNAL: {{ MONGODB_JOURNAL }}
+    {%- endif %}
   configdb:
     image: washpost/mongodb:3.2
     restart: always
