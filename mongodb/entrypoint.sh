@@ -71,8 +71,7 @@ function rs_initiate() {
     do
       if [ "$first_node" == "0" ]; then
         first_node=1
-        $mongo localhost:$MONGODB_PORT/admin --quiet --eval "printjson(rs.initiate())"
-        $mongo localhost:$MONGODB_PORT/admin --quiet --eval "cfg = rs.conf(); cfg.members[0].host = \"$node:$MONGODB_PORT\"; printjson(rs.reconfig(cfg))"
+        $mongo localhost:$MONGODB_PORT/admin --quiet --eval "printjson(rs.initiate({_id: \"$MONGODB_REPL_SET\", version: 1, members: [ { _id: 0, host : \"$node:$MONGODB_PORT\" } ] }))"
 
         while ! $mongo localhost:$MONGODB_PORT/admin --quiet --eval "db.isMaster().ismaster" | grep true
         do
