@@ -25,7 +25,7 @@ RUN curl -o /usr/local/bin/gosu -SL "https://github.com/tianon/gosu/releases/dow
 RUN apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys 7F0CEB10 D68FA50FEA312927
 
 ENV MONGO_MAJOR 3.2
-ENV MONGO_VERSION 3.2.10
+ENV MONGO_VERSION 3.2.11
 
 RUN echo "deb http://repo.mongodb.org/apt/debian wheezy/mongodb-org/$MONGO_MAJOR main" > /etc/apt/sources.list.d/mongodb-org.list
 
