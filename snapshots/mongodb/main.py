@@ -56,7 +56,7 @@ class Main():
 
     def get_snapshot_frequency(self):
         allowed_frequencies = [5, 10, 15, 20]
-        default_frequency = 10
+        default_frequency = 20
         snapshot_frequency = int(environ.get('MONGODB_SNAPSHOT_FREQUENCY', str(default_frequency)))
         if snapshot_frequency not in allowed_frequencies:
             self.logger.error('Invalid MONGODB_SNAPSHOT_FREQUENCY of %s minute. Only %s minutes are allowed. Changing to default frequency of %s minutes.' %
