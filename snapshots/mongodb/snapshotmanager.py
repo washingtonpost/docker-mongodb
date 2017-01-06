@@ -119,8 +119,8 @@ class SnapshotManager():
 
     # records the number of missing snapshots in the last hour
     def _record_backup_metrics(self, now, snapshots):
-        # since we are taking snapshots every 10 minutes there should be at least 5 backups in the last hour
-        expected_snapshots = 5
+        # since we are taking snapshots every 20 minutes there should be at least 2 backups in the last hour
+        expected_snapshots = 2
         last_hour = now - timedelta(minutes=60)
         snapshot_count = 0
         for snapshot in snapshots:
