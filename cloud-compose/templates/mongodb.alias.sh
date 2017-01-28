@@ -7,7 +7,11 @@ gpgcheck=0
 enabled=1
 EOF
 yum -y install mongodb-org-shell
-{%- if MONGODB_ADMIN_PASSWORD is defined %}
+{%- if secrets.MONGODB_ADMIN_PASSWORD is defined %}
+cat <<- EOF > /etc/profile.d/mongo.sh
+alias mongo='mongo -u admin -p ${MONGODB_ADMIN_PASSWORD} --authenticationDatabase admin'
+EOF
+{%- elif MONGODB_ADMIN_PASSWORD is defined %}
 cat <<- 'EOF' > /etc/profile.d/mongo.sh
 alias mongo='mongo -u admin -p {{ MONGODB_ADMIN_PASSWORD }} --authenticationDatabase admin'
 EOF

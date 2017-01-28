@@ -40,7 +40,17 @@ MONGODB_JOURNAL translates to the command line parameter of `--nojournal`. If yo
 
 ## How do I manage secrets?
 Secrets can be configured using environment variables. [Envdir](https://pypi.python.org/pypi/envdir) is highly recommended as a tool for switching between sets of environment variables in case you need to manage multiple clusters.
-At a minimum you will need AWS_ACCESS_KEY_ID, AWS_REGION, and AWS_SECRET_ACCESS_KEY. It is highly recommend that you also set MONGODB_ADMIN_PASSWORD to enable authentication.
+At a minimum you will need AWS_ACCESS_KEY_ID, AWS_REGION, and AWS_SECRET_ACCESS_KEY. 
+
+It is highly recommend that you also set MONGODB_ADMIN_PASSWORD to enable authentication. Although you can set the MONGODB_ADMIN_PASSWORD as environment variable, the preferred method is to to KMS encrypt secrets. Simply add MONGODB_ADMIN_PASSWORD to the secrets section of the cloud-compose.yml and then add the grant Decrypt permissions on the KMS key to the instance_profile section.
+
+Example of KMS encrypted secret:
+```
+cluster
+  secrets:
+    MONGODB_ADMIN_PASSWORD: "AQECAHgq..."
+  instance_policy: '{ "Statement": [ { "Action": [ "ec2:CreateSnapshot", "ec2:CreateTags", "ec2:DeleteSnapshot", "ec2:DescribeInstances", "ec2:DescribeSnapshotAttribute", "ec2:DescribeSnapshots", "ec2:DescribeVolumeAttribute", "ec2:DescribeVolumeStatus", "ec2:DescribeVolumes", "ec2:ModifySnapshotAttribute", "ec2:ResetSnapshotAttribute", "logs:CreateLogStream", "logs:PutLogEvents" ], "Effect": "Allow", "Resource": [ "*" ] }, { "Action": ["kms:Decrypt"], "Effect": "Allow", "Resource": ["arn:aws:kms:us-east-1:111111111111:key/22222222-2222-2222-2222-222222222222"] } ] }'
+```
 
 ## How do I configure the datadog metrics?
 Make sure you have the already datadog agent installed in your base image. You can then configure datadog metrics by setting the following environment variables DATADOG_API_KEY and DATADOG_APP_KEY. Then create a custom cluster.sh by copying docker-mongodb/cloud-compose/templates/cluster.sh to a local directory called templates. Then add the following line to the bottom of the cluster.sh file to include the default datadog.mongodb.sh in your cloud_init script. 
