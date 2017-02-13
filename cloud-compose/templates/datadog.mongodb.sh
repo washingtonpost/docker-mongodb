@@ -4,7 +4,7 @@ init_config:
 
 instances:
   # Specify the MongoDB URI, with database to use for reporting (defaults to "admin")
-{%- if secrets.MONGODB_ADMIN_PASSWORD is defined %}
+{%- if secrets is defined and secrets.MONGODB_ADMIN_PASSWORD is defined %}
   - server: mongodb://admin:${MONGODB_ADMIN_PASSWORD}@localhost:27018/admin
 {%- elif MONGODB_ADMIN_PASSWORD is defined %}
   - server: mongodb://admin:{{MONGODB_ADMIN_PASSWORD}}@localhost:27018/admin

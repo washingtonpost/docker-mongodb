@@ -20,7 +20,7 @@ services:
       MONGODB_HOST: ${INSTANCE_IP}
       CONFIGDB_HOST: ${INSTANCE_IP}
       NODE_ID: ${NODE_ID}
-    {%- if secrets.MONGODB_ADMIN_PASSWORD is defined %}
+    {%- if secrets is defined and secrets is defined and secrets.MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
     {%- elif MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
@@ -44,7 +44,7 @@ services:
     environment:
       NODE_ID: ${NODE_ID} 
       NODE_LIST: node0,node1,node2
-    {%- if secrets.MONGODB_ADMIN_PASSWORD is defined %}
+    {%- if secrets is defined and secrets.MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
     {%- elif MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
@@ -75,7 +75,7 @@ services:
     environment:
       NODE_ID: ${NODE_ID} 
       NODE_LIST: node0,node1,node2
-    {%- if secrets.MONGODB_ADMIN_PASSWORD is defined %}
+    {%- if secrets is defined and secrets.MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
     {%- elif MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
@@ -96,7 +96,7 @@ services:
     environment:
       CLUSTER_NAME: {{ name }}
       MONGODB_DEVICE_NAME: {{ aws.volumes[2].block }}
-    {%- if secrets.MONGODB_ADMIN_PASSWORD is defined %}
+    {%- if secrets is defined and secrets.MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
     {%- elif MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
