@@ -7,6 +7,7 @@ services:
       - "27017:27017"
     environment:
       MONGODB_REPL_SET: rs0
+      CONFIGDB_REPL_SET: cfgrs0
   mongodb:
     container_name: mongodb 
     command: --shardsvr --dbpath /data/db

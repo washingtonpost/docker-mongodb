@@ -62,6 +62,10 @@ if [ "$1" = 'mongos' ]; then
     params="$params --keyFile=/tmp/mongodb-keyfile"
   fi
 
+  if [[ "$CONFIGDB_REPL_SET" ]]; then
+    params="$params --configdb ${CONFIGDB_REPL_SET}/node0:27017"
+  fi
+
   if [[ $MONGODB_SHARD ]]; then
     if [[ "$NODE_ID" == "0" ]]; then
       add_shard &

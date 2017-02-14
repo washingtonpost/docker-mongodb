@@ -10,7 +10,7 @@ setup(
     install_requires=[
         'datadog>=0.10.0',
         'decorator>=4.0.9',
-        'pymongo>=3.2.1',
+        'pymongo>=3.4.0',
         'python-dateutil>=2.4.2',
         'pytz>=2015.7',
         'requests>=2.9.1',
