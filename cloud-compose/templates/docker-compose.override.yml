@@ -1,7 +1,7 @@
 version: "2"
 services:
   mongos:
-    image: washpost/mongos:${MONGODB_VERSION:-3.2}
+    image: washpost/mongos:${MONGODB_VERSION:-3.4}
     command: --configdb="${INSTANCE_IP}:27019"
     restart: always
     extra_hosts:
@@ -26,7 +26,7 @@ services:
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
     {%- endif %}
   mongodb:
-    image: washpost/mongodb:${MONGODB_VERSION:-3.2}
+    image: washpost/mongodb:${MONGODB_VERSION:-3.4}
     extra_hosts:
     {%- for node in aws.nodes %}
       - "node{{node.id}}:{{node.ip}}" 
@@ -59,7 +59,7 @@ services:
       MONGODB_JOURNAL: "{{ MONGODB_JOURNAL }}"
     {%- endif %}
   configdb:
-    image: washpost/mongodb:${MONGODB_VERSION:-3.2}
+    image: washpost/mongodb:${MONGODB_VERSION:-3.4}
     restart: always
     extra_hosts:
     {%- for node in aws.nodes %}
@@ -84,7 +84,7 @@ services:
       MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
     {%- endif %}
   snapshots:
-    image: washpost/mongodb-snapshots:${MONGODB_VERSION:-3.2}
+    image: washpost/mongodb-snapshots:${MONGODB_VERSION:-3.4}
     restart: always
     {%- if logging is defined and logging.driver is defined and logging.driver == "awslogs" %}
     logging: 

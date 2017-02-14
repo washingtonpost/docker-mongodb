@@ -1,8 +1,8 @@
 # mongodb.alias.sh 
 cat <<- EOF > /etc/yum.repos.d/mongodb.repo
-[mongodb-org-${MONGODB_VERSION:-3.2}]
+[mongodb-org-${MONGODB_VERSION:-3.4}]
 name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/${MONGODB_VERSION:-3.2}/x86_64/
+baseurl=https://repo.mongodb.org/yum/redhat/7/mongodb-org/${MONGODB_VERSION:-3.4}/x86_64/
 gpgcheck=0
 enabled=1
 EOF
