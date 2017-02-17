@@ -27,6 +27,31 @@ cloud-compose cluster up
 ```
 
 # FAQ
+## How do I change the MongoDB version?
+The default version is the latest release of the 3.2 series. If you want to use a different version (i.e. 3.4) set the MONGODB_VERSION environment variable in the cloud-compose.yml.
+
+```
+cluster:
+  environment:
+    MONGODB_VERSION: 3.4
+```
+
+## How do I upgrade a cluster running 3.2 to 3.4?
+First make sure that both mongodb and configdb are primary on the same host by running the following command:
+
+```
+mongo --eval 'rs.status()' --port 27018
+mongo --eval 'rs.status()' --port 27019
+```
+
+If they are not primary on the same host run the following command until they are primary on the same host:
+```
+# ssh to configdb primary server
+mongo --eval 'rs.stepDown()' --port 27019
+```
+
+Once you confirm that both mongodb and configdb are primary on the same host, upgrade the hosts one at a time starting with the hosts in secondary state and doing the primary server last.
+
 ## How do I tune the cluster?
 Most of the MongoDB settings default to sensible values, but if you have a write heavy cluster you may want to change the following options by adding environment variables to your cloud-compose.yml:
 
