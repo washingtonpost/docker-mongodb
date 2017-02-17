@@ -2,7 +2,7 @@ version: "2"
 services:
   mongos:
     image: washpost/mongos:${MONGODB_VERSION:-3.4}
-    command: --configdb="${INSTANCE_IP}:27019"
+    command: --configdb="cfgrs0/${INSTANCE_IP}:27019"
     restart: always
     extra_hosts:
     {%- for node in aws.nodes %}
