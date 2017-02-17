@@ -1,7 +1,7 @@
 version: "2"
 services:
   mongos:
-    build: mongos 
+    build: mongos/3.2
     environment:
       MONGODB_SHARD: mongodb
       MONGODB_HOST: mongodb
@@ -12,7 +12,7 @@ services:
       - configdb
       - mongodb 
   mongodb:
-    build: mongodb 
+    build: mongodb/3.2 
     hostname: mongodb
     extra_hosts:
       - "mongodb:127.0.0.1"
@@ -26,7 +26,7 @@ services:
     links:
       - configdb
   configdb:
-    build: mongodb 
+    build: mongodb/3.2 
     hostname: configdb 
     extra_hosts:
       - "configdb:127.0.0.1"
