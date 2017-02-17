@@ -5,7 +5,7 @@ RUN groupadd -r mongodb && useradd -r -g mongodb mongodb
 
 RUN apt-get update \
 	&& apt-get install -y --no-install-recommends \
-		numactl \
+		curl netcat numactl \
 	&& rm -rf /var/lib/apt/lists/*
 
 # grab gosu for easy step-down from root
