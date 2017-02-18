@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+set -x
 
 if [[ "$MONGODB_ADMIN_PASSWORD" ]]; then
   mongo="mongo -u admin -p ${MONGODB_ADMIN_PASSWORD} --authenticationDatabase admin"
@@ -106,7 +107,10 @@ if [ "$1" = 'mongod' ]; then
 
   if [[ "$MONGODB_ADMIN_PASSWORD" ]]; then
     if [[ "$NODE_ID" == "0" ]]; then
-      auth_initiate "$@"
+      if [ ! -e /data/db/mongod.lock ]; then 
+        # only initiate auth if this is the first time running and there is no previous lock file
+        auth_initiate "$params"
+      fi
     fi
 
     if [[ "$MONGODB_KEYFILE" ]]; then
@@ -118,7 +122,6 @@ if [ "$1" = 'mongod' ]; then
     chown mongodb /tmp/mongodb-keyfile
     params="$params --keyFile=/tmp/mongodb-keyfile"
   fi
-
 
   if [[ "$MONGODB_REPL_SET" ]]; then
     params="$params --replSet ${MONGODB_REPL_SET}"
