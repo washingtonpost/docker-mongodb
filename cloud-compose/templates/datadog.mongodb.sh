@@ -17,6 +17,10 @@ echo '{{node.ip}} node{{node.id}}' >> /etc/hosts
 {%- endfor %}
 
 # datadog.start
+{%- if secrets is defined and secrets.DATADOG_API_KEY is defined %}
+sh -c "sed 's/api_key:.*/api_key: $DATADOG_API_KEY/' /etc/dd-agent/datadog.conf.example > /etc/dd-agent/datadog.conf"
+{%- else %}
 sh -c "sed 's/api_key:.*/api_key: {{DATADOG_API_KEY}}/' /etc/dd-agent/datadog.conf.example > /etc/dd-agent/datadog.conf"
+{%- endif %}
 echo 'bind_host: 0.0.0.0' >> /etc/dd-agent/datadog.conf
 service datadog-agent restart
