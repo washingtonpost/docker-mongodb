@@ -1,5 +1,5 @@
 # datadog.mongodb.sh 
-cat <<- 'EOF' > /etc/dd-agent/conf.d/mongo.yaml
+cat <<- EOF > /etc/dd-agent/conf.d/mongo.yaml
 init_config:
 
 instances:
