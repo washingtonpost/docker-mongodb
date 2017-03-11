@@ -38,6 +38,8 @@ cluster:
 
 
 ## How do I upgrade a cluster running 3.2 to 3.4?
+Either use the [cloud-compose-mongo plugin](https://github.com/cloud-compose/cloud-compose-mongo) upgrade command or do the following steps to upgrade from 3.2 to 3.4.
+
 First make sure that both mongodb and configdb are primary on the same host by running the following command:
 
 ```
@@ -51,7 +53,8 @@ If they are not primary on the same host run the following command until they ar
 mongo --eval 'rs.stepDown()' --port 27019
 ```
 
-Once you confirm that both mongodb and configdb are primary on the same host, upgrade the hosts one at a time starting with the hosts in SECONDARY state and doing the PRIMARY server last. If you don't upgrade them in that order you will cause the replica set to run on only one node because of an incompatibilty between the index versions of 3.4 and 3.2
+Once you confirm that both mongodb and configdb are primary on the same host, upgrade the hosts one at a time starting with the hosts in SECONDARY state and doing the PRIMARY server last. If you don't upgrade them in that order you will cause the replica set to run on only one node because of an incompatibilty between the index versions of 3.4 and 3.2.
+
 
 ## How do I tune the cluster?
 Most of the MongoDB settings default to sensible values, but if you have a write heavy cluster you may want to change the following options by adding environment variables to your cloud-compose.yml:
