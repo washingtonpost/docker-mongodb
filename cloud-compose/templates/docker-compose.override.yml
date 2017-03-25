@@ -20,10 +20,15 @@ services:
       MONGODB_HOST: ${INSTANCE_IP}
       CONFIGDB_HOST: ${INSTANCE_IP}
       NODE_ID: ${NODE_ID}
-    {%- if secrets is defined and secrets is defined and secrets.MONGODB_ADMIN_PASSWORD is defined %}
+    {%- if secrets is defined and secrets.MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: ${MONGODB_ADMIN_PASSWORD}
     {%- elif MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
+    {%- endif %}
+    {%- if secrets is defined and secrets.MONGODB_KEYFILE is defined %}
+      MONGODB_KEYFILE: ${MONGODB_KEYFILE}
+    {%- elif MONGODB_KEYFILE is defined %}
+      MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
     {%- endif %}
   mongodb:
     image: washpost/mongodb:{{ MONGODB_VERSION|default('3.2') }}
@@ -49,7 +54,9 @@ services:
     {%- elif MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
     {%- endif %}
-    {%- if MONGODB_KEYFILE is defined %}
+    {%- if secrets is defined and secrets.MONGODB_KEYFILE is defined %}
+      MONGODB_KEYFILE: ${MONGODB_KEYFILE}
+    {%- elif MONGODB_KEYFILE is defined %}
       MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
     {%- endif %}
     {%- if MONGODB_OPLOG_SIZE is defined %}
@@ -80,7 +87,9 @@ services:
     {%- elif MONGODB_ADMIN_PASSWORD is defined %}
       MONGODB_ADMIN_PASSWORD: {{ MONGODB_ADMIN_PASSWORD }}
     {%- endif %}
-    {%- if MONGODB_KEYFILE is defined %}
+    {%- if secrets is defined and secrets.MONGODB_KEYFILE is defined %}
+      MONGODB_KEYFILE: ${MONGODB_KEYFILE}
+    {%- elif MONGODB_KEYFILE is defined %}
       MONGODB_KEYFILE: {{ MONGODB_KEYFILE }}
     {%- endif %}
   snapshots:
