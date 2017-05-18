@@ -10,3 +10,4 @@
 {% include "docker_compose.run.sh" %}
 {% include "system.network_conf.sh" %}
 {% include "datadog.mongodb.sh" %}
+{% include "pcp.config.sh" %}
