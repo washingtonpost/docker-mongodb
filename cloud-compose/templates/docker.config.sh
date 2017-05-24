@@ -1,7 +1,7 @@
 # docker.config.sh
 groupadd docker
 usermod -aG docker {{ aws.username }}
-{%- if ami is defined and ami == "docker:1.10" %}
+{%- if aws is defined and aws.ami is defined and aws.ami == "docker:1.10" %}
 cat << EOF > /usr/lib/systemd/system/docker.service
 [Unit]
 Description=Docker Application Container Engine
