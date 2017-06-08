@@ -2,9 +2,9 @@
 This project provides a Dockerized MongoDB cluster with the following features:
 
 * replica set for high availability (both mongodb and configdb)
-* sharding for easy scale out (mongos) 
+* sharding for easy scale out (mongos)
 * Authentication and authorization of client requests
-* Automatic backups every 10 minutes 
+* Automatic backups every 10 minutes
 * Automatic removal of old backups
 * Simple and safe cluster upgrade process that includes health checks to avoid an outage
 * High speed replacement of servers using the previous snapshot to bootstrap new servers
@@ -69,7 +69,7 @@ MONGODB_JOURNAL translates to the command line parameter of `--nojournal`. If yo
 
 ## How do I manage secrets?
 Secrets can be configured using environment variables. [Envdir](https://pypi.python.org/pypi/envdir) is highly recommended as a tool for switching between sets of environment variables in case you need to manage multiple clusters.
-At a minimum you will need AWS_ACCESS_KEY_ID, AWS_REGION, and AWS_SECRET_ACCESS_KEY. 
+At a minimum you will need AWS_ACCESS_KEY_ID, AWS_REGION, and AWS_SECRET_ACCESS_KEY.
 
 It is highly recommend that you also set MONGODB_ADMIN_PASSWORD to enable authentication. Although you can set the MONGODB_ADMIN_PASSWORD as environment variable, the preferred method is to to KMS encrypt secrets. Simply add MONGODB_ADMIN_PASSWORD to the secrets section of the cloud-compose.yml and then add the grant Decrypt permissions on the KMS key to the instance_profile section.
 
@@ -82,7 +82,7 @@ cluster
 ```
 
 ## How do I configure the datadog metrics?
-Make sure you have the already datadog agent installed in your base image. You can then configure datadog metrics by setting the following environment variables DATADOG_API_KEY and DATADOG_APP_KEY. Then create a custom cluster.sh by copying docker-mongodb/cloud-compose/templates/cluster.sh to a local directory called templates. Then add the following line to the bottom of the cluster.sh file to include the default datadog.mongodb.sh in your cloud_init script. 
+Make sure you have the already datadog agent installed in your base image. You can then configure datadog metrics by setting the following environment variables DATADOG_API_KEY and DATADOG_APP_KEY. Then create a custom cluster.sh by copying docker-mongodb/cloud-compose/templates/cluster.sh to a local directory called templates. Then add the following line to the bottom of the cluster.sh file to include the default datadog.mongodb.sh in your cloud_init script.
 ```
 {% include "datadog.mongodb.sh" %}
 ```
@@ -203,6 +203,83 @@ If you want to recreate a cluster, but don't want to use an existing snapshot fo
 
 ## How do I terminate a cluster?
 Once a cluster is terminated the data will be destroyed. If you have snapshots then you will be able to restore to the last snapshot. To terminate the cluster run cloud-compose cluster down.
+
+## How do I change the oplog size while the cluster is running?
+
+On rare occasion you may need to increase the size of the oplog while the cluster is running.  Usually this is because the turnover of the oplog is less than the time it takes to sync from a snapshot.
+
+(Instructions adapted from https://docs.mongodb.com/manual/tutorial/change-oplog-size/)
+
+1. Go to the Secondary that you want to increase the oplog size on.  If you have already done it on all of the secondaries, you can make the current primary a secondary with:
+
+```
+mongo localhost:27018
+db.stepDown()
+```
+
+2. Shut down extraneous services
+
+```
+docker stop snapshots
+docker stop mongos
+```
+
+Leave the config server running, you won't need to touch it here.
+
+3. Stop mongod
+
+```
+docker stop mongodb
+```
+
+4. Run a new mongod in standalone mode
+
+(change to correct version if using a version other than 3.2)
+
+```
+docker run -p 27020:27017  -v /data/mongodb/mongodb:/data/db mongo:3.2 mongod
+```
+
+5. In a new terminal window, ssh into the server again, open a mongo console
+
+```
+mongo localhost:27020
+```
+
+6. Run the commands to increase the size
+
+In this example, the oplog is 20 Gb.  Replace that number with the size you want.
+
+```
+use local
+db.temp.drop()
+db.temp.save( db.oplog.rs.find( { }, { ts: 1, h: 1 } ).sort( {$natural : -1} ).limit(1).next() )
+
+db = db.getSiblingDB('local')
+db.oplog.rs.drop()
+db.runCommand( { create: "oplog.rs", capped: true, size: (20 * 1024 * 1024 * 1024) } )
+
+db.oplog.rs.save( db.temp.findOne() )
+db.oplog.rs.find()
+
+```
+
+7. Kill the standalone instance and restart mongod
+
+```
+# ^C on current running process
+docker start mongodb
+```
+
+8. Wait for the node to sync, and restart the other processes
+
+```
+docker start mongos
+docker start snapshots
+```
+
+9. Repeat for the other nodes, making sure to stepDown the primary node first.
+
 
 # Contributing
 If you want to contribute to the project see the [contributing guide](CONTRIBUTING.md).
