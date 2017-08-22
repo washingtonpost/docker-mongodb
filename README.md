@@ -214,7 +214,7 @@ On rare occasion you may need to increase the size of the oplog while the cluste
 
 ```
 mongo localhost:27018
-db.stepDown()
+rs.stepDown()
 ```
 
 2. Shut down extraneous services
