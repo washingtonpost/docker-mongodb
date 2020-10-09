@@ -38,3 +38,4 @@ function deploy() {
 
 deploy 3.2 3.2.12 false 
 deploy 3.4 3.4.2 true
+deploy 3.6 3.6.20 false
