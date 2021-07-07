@@ -61,7 +61,7 @@ Most of the MongoDB settings default to sensible values, but if you have a write
 
 * MONGODB_OPLOG_SIZE: 10000
 
-MONGODB_OPLOG_SIZE translates the the command line parameter `--oplogSize`. The value is the number of megabytes for the oplog. You can check if your oplog is big enough by running 1mongo --port 27018 --eval 'rs.printReplicationInfo()'`. If the output shows you have less than 24 hours between the first and last event, you may want to increase the size to be bigger.
+MONGODB_OPLOG_SIZE translates the the command line parameter `--oplogSize`. The value is the number of megabytes for the oplog. You can check if your oplog is big enough by running `mongo --port 27018 --eval 'rs.printReplicationInfo()'`. If the output shows you have less than 24 hours between the first and last event, you may want to increase the size to be bigger.
 
 * MONGODB_JOURNAL: "false"
 
